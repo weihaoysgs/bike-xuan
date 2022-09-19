@@ -1,6 +1,8 @@
 #include <glog/logging.h>
 #include <ros/ros.h>
 
+#include "bike_core/ImuCH100.hpp"
+
 void InitGlog() {
   google::InitGoogleLogging("Remote Control Node");
   google::SetLogFilenameExtension("log_");
@@ -15,5 +17,8 @@ void InitGlog() {
 int main(int argc, char** argv) {
   InitGlog();
   ros::init(argc, argv, "sub_imu_test_node");
+  ImuCH100 imu;
   LOG(INFO) << "Hello Node";
+  qDebug() << "Qt";
+  ros::spin();
 }
