@@ -13,11 +13,13 @@
 #include <memory>
 #include <thread>
 
+#include "bike_core/odrive_can_msg.h"
+
 class CanSendReceive {
  public:
   CanSendReceive();
-  ~CanSendReceive() override = default;
-  void tReceivePublishCanMsg(const std::string &can_port_name) const;
+  ~CanSendReceive() = default;
+  void tReceivePublishCanMsg() const;
 
  public:
   static int GetOneSocketCanInstance(const std::string &can_port_name);
@@ -26,8 +28,11 @@ class CanSendReceive {
                                         const canid_t &can_id,
                                         const std::array<int16_t, 4> &data = {
                                             0, 0, 0, 0});
-private:
-    ros::Publisher pub_can_msg_;
+
+ private:
+  std::string receive_can_port_name_;
+  ros::NodeHandle nh_;
+  ros::Publisher pub_can_msg_;
 };
 
 #endif  // CANRECEIVESEND_HPP
