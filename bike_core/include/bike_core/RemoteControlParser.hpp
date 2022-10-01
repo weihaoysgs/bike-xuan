@@ -36,9 +36,11 @@ class RemoteControlDataParser : public QObject {
   ~RemoteControlDataParser() override = default;
 
  public:
-  void NodeSpinThread();
+  void NodeSpinThread() {
+    ros::spin();
+    ros::shutdown();
+  };
  public slots:
-
   void ReadRemoteControlSerialDataCallback();
 
  private:
