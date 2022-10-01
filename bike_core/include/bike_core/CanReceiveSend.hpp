@@ -14,20 +14,22 @@
 #include <thread>
 
 #include "bike_core/odrive_can_msg.h"
-
+#define CAN_RTR_FLAG 0x40000000U  // remote transmission request
 class CanSendReceive {
  public:
   CanSendReceive();
   ~CanSendReceive() = default;
   void tReceivePublishCanMsg() const;
+  void tSendSpecialCommand() const;
+  void ParserSpecialCanMessage(uint32_t can_id,
+                               can_frame &receive_can_frame) const;
 
  public:
   static int GetOneSocketCanInstance(const std::string &can_port_name);
 
   static int WriteDataToSocketCanDevice(const int &socket_can_fd,
                                         const canid_t &can_id,
-                                        const std::array<int16_t, 4> &data = {
-                                            0, 0, 0, 0});
+                                        std::array<uint8_t, 8> &data);
 
  private:
   std::string receive_can_port_name_;
