@@ -28,6 +28,6 @@ class CanSendReceive {
                                             0, 0, 0, 0});
 private:
     ros::Publisher pub_can_msg_;
-}
+};
 
 #endif  // CANRECEIVESEND_HPP
