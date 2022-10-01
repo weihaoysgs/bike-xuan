@@ -2,13 +2,16 @@
 #define REMOTE_CONTROL_PARSER_HPP
 
 #include <bike_core/remote_control_msg.h>
+#include <glog/logging.h>
 #include <ros/ros.h>
 #include <std_msgs/Header.h>
 
+#include <QApplication>
 #include <QDebug>
 #include <QtSerialPort/QSerialPort>
 #include <QtSerialPort/QSerialPortInfo>
 #include <memory>
+#include <thread>
 
 class RemoteCtrlNode {
  public:
@@ -28,6 +31,7 @@ class RemoteCtrlNode {
 
 class RemoteControlDataParser : public QObject {
   Q_OBJECT
+ public:
   RemoteControlDataParser();
   ~RemoteControlDataParser() override = default;
 
