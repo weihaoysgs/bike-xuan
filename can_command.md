@@ -47,3 +47,10 @@ cansend can0 216#0000000000000000
 - MotorError.CURRENT_LIMIT_VIOLATION
 
   闭环模式下，手动强行转动电机
+
+
+
+## Reference
+
+- https://blog.csdn.net/gjy_skyblue/article/details/115412902 （速度模式配置）
+- 
