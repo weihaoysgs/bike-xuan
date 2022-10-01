@@ -58,3 +58,15 @@ target_link_libraries(sub_imu_test_node
   Qt5::SerialPort
   glog
 )
+
+add_executable(parser_remote_data_node
+node/ParserRemoteDataNode.cpp
+src/RemoteControlParser.cpp
+)
+target_link_libraries(parser_remote_data_node
+  ${catkin_LIBRARIES}
+  Qt5::Widgets
+  Qt5::Core
+  Qt5::SerialPort
+  glog
+)
