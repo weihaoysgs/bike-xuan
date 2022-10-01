@@ -22,6 +22,7 @@ find_package(catkin REQUIRED COMPONENTS
 add_message_files(
   FILES
   remote_control_msg.msg
+  odrive_can_msg.msg
 )
 
 generate_messages(
