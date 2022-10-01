@@ -59,6 +59,7 @@ target_link_libraries(sub_imu_test_node
   glog
 )
 
+# 解析遥控器数据节点
 qt5_wrap_cpp(parser_remote_data_node_header_SRC include/bike_core/RemoteControlParser.hpp)
 
 add_executable(parser_remote_data_node
@@ -71,5 +72,16 @@ target_link_libraries(parser_remote_data_node
   Qt5::Widgets
   Qt5::Core
   Qt5::SerialPort
+  glog
+)
+
+
+# 测试接收发送串口数据接口
+add_executable(test_can_send_receive_node
+test/can_send_receive_node.cpp
+src/CanReceiveSend.cpp
+)
+target_link_libraries(test_can_send_receive_node
+  ${catkin_LIBRARIES}
   glog
 )
