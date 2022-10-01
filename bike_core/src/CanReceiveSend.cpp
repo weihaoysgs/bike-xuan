@@ -8,9 +8,9 @@ CanSendReceive::CanSendReceive() : nh_("~") {
   std::thread t_receive_odrive_can_msg_pub =
       std::thread(&CanSendReceive::tReceivePublishCanMsg, this);
   t_receive_odrive_can_msg_pub.detach();
-
-  // std::thread t_send_special_cmd =
-  //     std::thread(&CanSendReceive::tSendSpecialCommand, this);
+  std::thread t_send_special_cmd =
+      std::thread(&CanSendReceive::tSendSpecialCommand, this);
+  t_send_special_cmd.detach();
 }
 
 void CanSendReceive::tReceivePublishCanMsg() const {
@@ -61,11 +61,13 @@ int CanSendReceive::GetOneSocketCanInstance(const std::string &can_port_name) {
 void CanSendReceive::tSendSpecialCommand() const {
   int socket_can_fd = GetOneSocketCanInstance(receive_can_port_name_);
   std::array<uint8_t, 8> data;
-  data.at(0) = 0x10;
-  // cansend can0 209#r1000000000000000 查询电机当前的速度
-  // cansend can0 20C#0000000007D00000 给点击速度指令
-  while (ros::ok()) {
-    WriteDataToSocketCanDevice(socket_can_fd, 209, data);
+  data.at(4) = 0x07;
+  data.at(5) = 0xD0;
+
+  // cansend can0 209#r 10 00000000000000 查询电机当前的速度
+  // cansend can0 20C# 00 00 00 00 07 D0 00 00 给点击速度指令
+  if (!WriteDataToSocketCanDevice(socket_can_fd, 524, data)) {
+    LOG(ERROR) << "Send Can Message Error";
   }
 }
 
@@ -93,20 +95,10 @@ void CanSendReceive::ParserSpecialCanMessage(
     uint32_t can_id, can_frame &receive_can_frame) const {
   constexpr uint32_t motor_position_vel_can_msg_can_id = 521;
   if (motor_position_vel_can_msg_can_id == can_id) {
-    uint8_t data[8];
-    data[0] = receive_can_frame.data[0];
-    data[1] = receive_can_frame.data[1];
-    data[2] = receive_can_frame.data[2];
-    data[3] = receive_can_frame.data[3];
-    data[4] = receive_can_frame.data[4];
-    data[5] = receive_can_frame.data[5];
-    data[6] = receive_can_frame.data[6];
-    data[7] = receive_can_frame.data[7];
-    float *position = (float *)data;
-    float *speed = (float *)(data + 4);
-    std::cout << std::hex << "Data: " << data[0] << " " << data[1] << " " << data[2] << " "
-              << data[3] << " " << data[4] << " " << data[5] << " " << data[6]
-              << " " << data[7];
+    float *position = reinterpret_cast<float *>(receive_can_frame.data);
+    float *speed = reinterpret_cast<float *>(receive_can_frame.data + 4);
+    // float *position = (float *)receive_can_frame.data;
+    // float *speed = (float *)(receive_can_frame.data + 4);
     LOG(INFO) << std::dec << "Speed: " << *speed << " "
               << "Position: " << *position;
   }
