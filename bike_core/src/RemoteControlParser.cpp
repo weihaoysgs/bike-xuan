@@ -55,36 +55,21 @@ bool RemoteControlDataParser::InitRemoteCtrlSerialport(
 
 void RemoteControlDataParser::Parser(
     const QByteArray &sbus_buf, bike_core::remote_control_msg &rc_ctrl) const {
-  auto sbus_buf_temp =
-      reinterpret_cast<unsigned char *>(const_cast<char *>(sbus_buf.data()));
-  rc_ctrl.ch_x[0] = static_cast<int16_t>(
-      (sbus_buf_temp[0] | (sbus_buf_temp[1] << 8)) & 0x07ff);  //! Channel 0
-  rc_ctrl.ch_x[1] =
-      static_cast<int16_t>(((sbus_buf_temp[1] >> 3) | (sbus_buf_temp[2] << 5)) &
-                           0x07ff);  //! Channel 1
-  rc_ctrl.ch_x[2] =
-      static_cast<int16_t>(((sbus_buf_temp[2] >> 6) | (sbus_buf_temp[3] << 2) |
-                            (sbus_buf_temp[4] << 10)) &
-                           0x07ff);  //! Channel 2
-  rc_ctrl.ch_x[3] =
-      static_cast<int16_t>(((sbus_buf_temp[4] >> 1) | (sbus_buf_temp[5] << 7)) &
-                           0x07ff);                      //! Channel 3
-  rc_ctrl.s1 = ((sbus_buf_temp[5] >> 4) & 0x0003);       //! Switch left
-  rc_ctrl.s2 = ((sbus_buf_temp[5] >> 4) & 0x000C) >> 2;  //! Switch right
-  rc_ctrl.mouse_x = static_cast<int16_t>(
-      sbus_buf_temp[6] | (sbus_buf_temp[7] << 8));  //! Mouse X axis
-  rc_ctrl.mouse_y = static_cast<int16_t>(
-      sbus_buf_temp[8] | (sbus_buf_temp[9] << 8));  //! Mouse Y axis
-  rc_ctrl.mouse_z = static_cast<int16_t>(
-      sbus_buf_temp[10] | (sbus_buf_temp[11] << 8));  //! Mouse Z axis
-  rc_ctrl.mouse_press_left = sbus_buf_temp[12];       //! Mouse Left Is Press ?
-  rc_ctrl.mouse_press_right = sbus_buf_temp[13];      //! Mouse Right Is Press ?
-  rc_ctrl.key_value =
-      sbus_buf_temp[14] | (sbus_buf_temp[15] << 8);  //! KeyBoard value
-  rc_ctrl.ch_x[4] = static_cast<int16_t>(sbus_buf_temp[16] |
-                                         (sbus_buf_temp[17] << 8));  //! NULL
-
+  auto sbus_buf_temp = reinterpret_cast<unsigned char *>(const_cast<char *>(sbus_buf.data()));
+  rc_ctrl.ch_x[0] = static_cast<int16_t>((sbus_buf_temp[0] | (sbus_buf_temp[1] << 8)) & 0x07ff);         // Channel 0
+  rc_ctrl.ch_x[1] = static_cast<int16_t>(((sbus_buf_temp[1] >> 3) | (sbus_buf_temp[2] << 5)) & 0x07ff);  // Channel 1
+  rc_ctrl.ch_x[2] = static_cast<int16_t>(((sbus_buf_temp[2] >> 6) | (sbus_buf_temp[3] << 2) |
+                            (sbus_buf_temp[4] << 10)) & 0x07ff);                                         // Channel 2
+  rc_ctrl.ch_x[3] = static_cast<int16_t>(((sbus_buf_temp[4] >> 1) | (sbus_buf_temp[5] << 7)) & 0x07ff);  // Channel 3
+  rc_ctrl.s1 = ((sbus_buf_temp[5] >> 4) & 0x0003);       // Switch left
+  rc_ctrl.s2 = ((sbus_buf_temp[5] >> 4) & 0x000C) >> 2;  // Switch right
+  rc_ctrl.mouse_x = static_cast<int16_t>( sbus_buf_temp[6] | (sbus_buf_temp[7] << 8));    // Mouse X axis
+  rc_ctrl.mouse_y = static_cast<int16_t>( sbus_buf_temp[8] | (sbus_buf_temp[9] << 8));    // Mouse Y axis
+  rc_ctrl.mouse_z = static_cast<int16_t>( sbus_buf_temp[10] | (sbus_buf_temp[11] << 8));  // Mouse Z axis
+  rc_ctrl.mouse_press_left = sbus_buf_temp[12];       // Mouse Left Is Press ?
+  rc_ctrl.mouse_press_right = sbus_buf_temp[13];      // Mouse Right Is Press ?
+  rc_ctrl.key_value = sbus_buf_temp[14] | (sbus_buf_temp[15] << 8);  // KeyBoard value
+  rc_ctrl.ch_x[4] = static_cast<int16_t>(sbus_buf_temp[16] | (sbus_buf_temp[17] << 8));  // NULL
   constexpr int RC_CH_VALUE_OFFSET = 1024;
-  std::for_each(rc_ctrl.ch_x.begin(), rc_ctrl.ch_x.end(),
-                [](int16_t &element) { element -= RC_CH_VALUE_OFFSET; });
+  std::for_each(rc_ctrl.ch_x.begin(), rc_ctrl.ch_x.end(), [](int16_t &element) { element -= RC_CH_VALUE_OFFSET; });
 }
