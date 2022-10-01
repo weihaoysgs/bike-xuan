@@ -59,9 +59,12 @@ target_link_libraries(sub_imu_test_node
   glog
 )
 
+qt5_wrap_cpp(parser_remote_data_node_header_SRC include/bike_core/RemoteControlParser.hpp)
+
 add_executable(parser_remote_data_node
 node/ParserRemoteDataNode.cpp
 src/RemoteControlParser.cpp
+${parser_remote_data_node_header_SRC}
 )
 target_link_libraries(parser_remote_data_node
   ${catkin_LIBRARIES}
