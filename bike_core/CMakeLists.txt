@@ -77,12 +77,22 @@ target_link_libraries(parser_remote_data_node
 )
 
 
-# 测试接收发送串口数据接口
+# 测试 odrive can 数据接受以及解析节点
 add_executable(test_can_send_receive_node
 test/can_send_receive_node.cpp
 src/CanReceiveSend.cpp
 )
 target_link_libraries(test_can_send_receive_node
+  ${catkin_LIBRARIES}
+  glog
+)
+
+# odrive can 数据接受以及解析节点
+add_executable(can_send_receive_node
+node/CanSendReceiveNode.cpp
+src/CanReceiveSend.cpp
+)
+target_link_libraries(can_send_receive_node
   ${catkin_LIBRARIES}
   glog
 )
