@@ -59,4 +59,4 @@ cansend can0 20C# 00 00 00 00 07 D0 00 00 给点击速度指令
 ## Reference
 
 - https://blog.csdn.net/gjy_skyblue/article/details/115412902 （速度模式配置）
-- 
+- https://blog.csdn.net/gjy_skyblue/article/details/115134590  (电流环配置)
