@@ -23,6 +23,7 @@ add_message_files(
   FILES
   remote_control_msg.msg
   odrive_can_msg.msg
+  odrive_motor_feedback_msg.msg
 )
 
 generate_messages(
