@@ -28,7 +28,7 @@ class CanSendReceive {
   static int GetOneSocketCanInstance(const std::string &can_port_name);
 
   static int WriteDataToSocketCanDevice(const int &socket_can_fd,
-                                        const canid_t &can_id,
+                                        const canid_t &can_id, bool is_RTR,
                                         std::array<uint8_t, 8> &data);
 
  private:

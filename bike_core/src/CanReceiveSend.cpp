@@ -61,21 +61,28 @@ int CanSendReceive::GetOneSocketCanInstance(const std::string &can_port_name) {
 void CanSendReceive::tSendSpecialCommand() const {
   int socket_can_fd = GetOneSocketCanInstance(receive_can_port_name_);
   std::array<uint8_t, 8> data;
-  data.at(4) = 0x07;
-  data.at(5) = 0xD0;
+  // data.at(4) = 0x07;
+  // data.at(5) = 0xD0;
 
   // cansend can0 209#r 10 00000000000000 查询电机当前的速度
   // cansend can0 20C# 00 00 00 00 07 D0 00 00 给点击速度指令
-  if (!WriteDataToSocketCanDevice(socket_can_fd, 524, data)) {
-    LOG(ERROR) << "Send Can Message Error";
+  ros::Rate rate(20);
+  data.at(0) = 0x10;
+  while (ros::ok()) {
+    if (!WriteDataToSocketCanDevice(socket_can_fd, 521, true, data)) {
+      LOG(ERROR) << "Send Can Message Error";
+    }
+    rate.sleep();
   }
 }
 
 int CanSendReceive::WriteDataToSocketCanDevice(const int &socket_can_fd,
                                                const canid_t &can_id,
+                                               bool is_RTR,
                                                std::array<uint8_t, 8> &data) {
   struct can_frame can_send_frame {};
   can_send_frame.can_id = can_id;
+  if (is_RTR) can_send_frame.can_id |= CAN_RTR_FLAG;
   can_send_frame.data[0] = data.at(0);
   can_send_frame.data[1] = data.at(1);
   can_send_frame.data[2] = data.at(2);
@@ -97,8 +104,6 @@ void CanSendReceive::ParserSpecialCanMessage(
   if (motor_position_vel_can_msg_can_id == can_id) {
     float *position = reinterpret_cast<float *>(receive_can_frame.data);
     float *speed = reinterpret_cast<float *>(receive_can_frame.data + 4);
-    // float *position = (float *)receive_can_frame.data;
-    // float *speed = (float *)(receive_can_frame.data + 4);
     LOG(INFO) << std::dec << "Speed: " << *speed << " "
               << "Position: " << *position;
   }
