@@ -10,7 +10,7 @@ class BikeXuanControl {
  public:
   BikeXuanControl();
   ~BikeXuanControl() = default;
-
+  const bool ChechSubscriberMessageTimestamp() const;
  private:
   void SubOdriveCanSourceMessageCB(
       const bike_core::odrive_can_msg::ConstPtr &msg) {
@@ -38,7 +38,8 @@ class BikeXuanControl {
   void SubIMUCH100MessageCallback();
 
  private:
-  void timerBikeCoreControl(const ros::TimerEvent &event);
+  // void timerthreadBikeCoreControl(const ros::TimerEvent &event);
+  void tBikeCoreControl();
 
  private:
   ros::NodeHandle nh_;
