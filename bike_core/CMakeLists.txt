@@ -97,3 +97,19 @@ target_link_libraries(can_send_receive_node
   ${catkin_LIBRARIES}
   glog
 )
+
+# 核心控制节点
+add_executable(bike_xuan_core_control_node
+node/BikeXuanCoreControlNode.cpp
+src/CanReceiveSend.cpp
+src/BikeXuanControl.cpp
+src/RemoteControlParser.cpp
+${parser_remote_data_node_header_SRC}
+)
+target_link_libraries(bike_xuan_core_control_node
+  ${catkin_LIBRARIES}
+  Qt5::Widgets
+  Qt5::Core
+  Qt5::SerialPort
+  glog
+)
