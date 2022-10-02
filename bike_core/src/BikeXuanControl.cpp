@@ -22,5 +22,14 @@ BikeXuanControl::BikeXuanControl() : nh_("~") {
                       &BikeXuanControl::timerBikeCoreControl, this);
 }
 
-void BikeXuanControl::timerBikeCoreControl(const ros::TimerEvent &event) {
+const bool BikeXuanControl::ChechSubscriberMessageTimestamp() const {
+  double time_now = ros::Time::now().toSec();
+  double remote_ctrl_data_time = rc_ctrl_msg_ptr_->header.stamp.toSec();
+  double motor_parsed_data_time =
+      odrive_can_parsed_msg_ptr_->header.stamp.toSec();
+  LOG_IF(WARNING, 0) << "dt remote_ctrl_data_time: "
+                     << std::abs(time_now - remote_ctrl_data_time)
+                     << "  dt motor_parsed_data_time: "
+                     << std::abs(time_now - motor_parsed_data_time);
+  return true;
 }
