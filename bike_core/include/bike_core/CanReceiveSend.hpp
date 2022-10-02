@@ -15,6 +15,7 @@
 #include <thread>
 
 #include "bike_core/odrive_can_msg.h"
+#include "bike_core/odrive_motor_feedback_msg.h"
 
 class CanSendReceive {
  public:
@@ -37,6 +38,7 @@ class CanSendReceive {
   std::string receive_can_port_name_;
   ros::NodeHandle nh_;
   ros::Publisher pub_can_msg_;
+  ros::Publisher pub_odrive_motor_msg_;
 };
 
 #endif  // CANRECEIVESEND_HPP

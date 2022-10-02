@@ -4,7 +4,8 @@ CanSendReceive::CanSendReceive() : nh_("~") {
   receive_can_port_name_ = "can0";
   pub_can_msg_ =
       nh_.advertise<bike_core::odrive_can_msg>("odrive_src_can_msg", 100);
-
+  pub_odrive_motor_msg_ = nh_.advertise<bike_core::odrive_motor_feedback_msg>(
+      "odrive_motor_parsed_data", 1);
   std::thread t_receive_odrive_can_msg_pub =
       std::thread(&CanSendReceive::tReceivePublishCanMsg, this);
   t_receive_odrive_can_msg_pub.detach();
@@ -97,11 +98,18 @@ int CanSendReceive::WriteDataToSocketCanDevice(
 
 void CanSendReceive::ParserSpecialCanMessage(
     uint32_t can_id, can_frame &receive_can_frame) const {
+  // TODO: change the ID define position
   constexpr uint32_t motor_position_vel_can_msg_can_id = 521;
   if (motor_position_vel_can_msg_can_id == can_id) {
     float *position = reinterpret_cast<float *>(receive_can_frame.data);
     float *speed = reinterpret_cast<float *>(receive_can_frame.data + 4);
-    LOG(INFO) << std::dec << "Speed: " << *speed << " "
-              << "Position: " << *position;
+    bike_core::odrive_motor_feedback_msg odrive_motor_vel_position_data;
+    odrive_motor_vel_position_data.header.stamp = ros::Time::now();
+    odrive_motor_vel_position_data.position = *position;
+    odrive_motor_vel_position_data.speed = *speed;
+    odrive_motor_vel_position_data.can_id = motor_position_vel_can_msg_can_id;
+    pub_odrive_motor_msg_.publish(odrive_motor_vel_position_data);
+    // LOG(INFO) << std::dec << "Speed: " << *speed << " "
+    //           << "Position: " << *position;
   }
 }
