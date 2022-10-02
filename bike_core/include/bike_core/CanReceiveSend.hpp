@@ -14,7 +14,7 @@
 #include <thread>
 
 #include "bike_core/odrive_can_msg.h"
-#define CAN_RTR_FLAG 0x40000000U  // remote transmission request
+
 class CanSendReceive {
  public:
   CanSendReceive();
