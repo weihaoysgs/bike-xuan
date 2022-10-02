@@ -1,8 +1,6 @@
 #ifndef ODRIVE_COMMAN_HPP
 #define ODRIVE_COMMAN_HPP
 
-#define CAN_RTR_FLAG 0x40000000U  // remote transmission request
-
 enum ODriveCanCommandHeader {
     SEND_CHECK_MOTOR_SPEED_POSITION = 0x209
 };
