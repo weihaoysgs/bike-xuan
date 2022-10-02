@@ -10,6 +10,7 @@
 #include <sys/socket.h>
 
 #include <chrono>
+#include <tuple>
 #include <memory>
 #include <thread>
 
@@ -28,8 +29,9 @@ class CanSendReceive {
   static int GetOneSocketCanInstance(const std::string &can_port_name);
 
   static int WriteDataToSocketCanDevice(const int &socket_can_fd,
-                                        const canid_t &can_id, bool is_RTR,
-                                        std::array<uint8_t, 8> &data);
+                                        const canid_t &can_id,
+                                        const bool is_RTR,
+                                        const std::array<uint8_t, 8> &data);
 
  private:
   std::string receive_can_port_name_;

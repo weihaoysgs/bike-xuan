@@ -60,26 +60,23 @@ int CanSendReceive::GetOneSocketCanInstance(const std::string &can_port_name) {
 
 void CanSendReceive::tSendSpecialCommand() const {
   int socket_can_fd = GetOneSocketCanInstance(receive_can_port_name_);
-  std::array<uint8_t, 8> data;
-  // data.at(4) = 0x07;
-  // data.at(5) = 0xD0;
-
-  // cansend can0 209#r 10 00000000000000 查询电机当前的速度
-  // cansend can0 20C# 00 00 00 00 07 D0 00 00 给点击速度指令
-  ros::Rate rate(20);
-  data.at(0) = 0x10;
+  const std::tuple<const canid_t, const bool, const std::array<uint8_t, 8>>
+      check_vel_position_cmd{521, true, {0x10}};
+  ros::Rate rate(100);
   while (ros::ok()) {
-    if (!WriteDataToSocketCanDevice(socket_can_fd, 521, true, data)) {
+    if (!WriteDataToSocketCanDevice(
+            socket_can_fd, std::get<const canid_t>(check_vel_position_cmd),
+            std::get<const bool>(check_vel_position_cmd),
+            std::get<const std::array<uint8_t, 8>>(check_vel_position_cmd))) {
       LOG(ERROR) << "Send Can Message Error";
     }
     rate.sleep();
   }
 }
 
-int CanSendReceive::WriteDataToSocketCanDevice(const int &socket_can_fd,
-                                               const canid_t &can_id,
-                                               bool is_RTR,
-                                               std::array<uint8_t, 8> &data) {
+int CanSendReceive::WriteDataToSocketCanDevice(
+    const int &socket_can_fd, const canid_t &can_id, const bool is_RTR,
+    const std::array<uint8_t, 8> &data) {
   struct can_frame can_send_frame {};
   can_send_frame.can_id = can_id;
   if (is_RTR) can_send_frame.can_id |= CAN_RTR_FLAG;
