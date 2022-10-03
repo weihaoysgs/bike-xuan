@@ -52,9 +52,9 @@ int CanSendReceive::GetOneSocketCanInstance(const std::string &can_port_name) {
   ioctl(socket_can, SIOCGIFINDEX, &ifr);
   addr.can_family = AF_CAN;
   addr.can_ifindex = ifr.ifr_ifindex;
-  (void)bind(socket_can, (struct sockaddr *)&addr,
+  int bind_ret = bind(socket_can, (struct sockaddr *)&addr,
              sizeof(addr));  // bind the socket and canx
-  LOG_IF(FATAL, socket_can == -1)
+  LOG_IF(FATAL, socket_can == -1 || bind_ret < 0)
       << "Socket Can " + can_port_name + " Open Failed ";
   return socket_can;
 }
