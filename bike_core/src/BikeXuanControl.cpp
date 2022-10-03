@@ -1,4 +1,6 @@
 #include "bike_core/BikeXuanControl.hpp"
+float target_speed_;
+float current_speed;
 
 int GetOneSocketCanSendInstance(const char *port_name)
 {
@@ -49,9 +51,59 @@ BikeXuanControl::BikeXuanControl() : nh_("~") {
       nh_.subscribe<bike_core::odrive_motor_feedback_msg>(
           "/can_send_receive_node/odrive_motor_parsed_data", 10,
           &BikeXuanControl::SubOdriveMotorFeedbackParsedMessageCB, this);
+
+    bike_balance_timer_ = nh_.createTimer(ros::Duration(1.0 / 1000), 
+       &BikeXuanControl::timerBalance, this);
+    // bike_balance_timer_.start();
+
   std::thread t_bike_core_control =
       std::thread(&BikeXuanControl::tBikeCoreControl, this);
   t_bike_core_control.detach();
+
+
+  
+  std::thread t_bike_balance =
+      std::thread(&BikeXuanControl::tBalance, this);
+  t_bike_balance.detach();
+}
+
+int t_ms,t_2ms,t_10ms,t_100ms;
+void BikeXuanControl::tBalance()
+{
+    ros::Rate rate(10); //hz
+    while (ros::ok())
+    {
+        LOG(INFO) << "thread tBalance";
+        if(t_2ms==1)
+        {
+           Balance_endocyclic();
+           t_2ms=0;
+        }
+        if(t_10ms==1)
+        {
+           Balance_outcyclic();
+           t_10ms=0;
+        }
+        if(t_100ms==1)
+        {
+           Speed_control();
+           t_100ms=0;
+        }
+        rate.sleep();
+    }
+}
+
+void BikeXuanControl::timerBalance(const ros::TimerEvent &event)
+{
+    LOG(INFO) << "timerBalance";
+    t_ms++;
+    if(t_ms%2==0)t_2ms=1;
+    if(t_ms%10==0)t_10ms=1;
+    if(t_ms%100==0)
+    {
+        t_100ms=1;
+        t_ms=0;
+    }
 }
 
 void BikeXuanControl::tBikeCoreControl() {
@@ -84,21 +136,20 @@ void BikeXuanControl::tBikeCoreControl() {
         << "ChechSubscriberMessageTimestamp Failed!\t" <<
         []() -> std::string { return std::string("Set Motor Speed To [0.0]"); };
 
-    float target_speed = rc_ctrl_msg_ptr_->ch_x[0] / 5.0;
-    float current_speed = odrive_can_parsed_msg_ptr_->speed;
-    float error = target_speed - current_speed;
+    //float target_speed = rc_ctrl_msg_ptr_->ch_x[0] / 5.0;
+    
+    current_speed = odrive_can_parsed_msg_ptr_->speed;
     float kp = 1.0;
     float ki = 1.0;
     float kd = 1.0;
     
     
-    int16_t int_speed = static_cast<int16_t>(error*kp);
+    int16_t int_speed = static_cast<int16_t>(0);
 
-    LOG_IF(WARNING, 1) << "current_speed: " << current_speed << "\t"
-                       << "target_speed: " << target_speed << "\terror: " << error << "\tint speed:" << int_speed;
+    // LOG_IF(WARNING, 1) << "current_speed: " << current_speed << "\t"
+    //                    << "target_speed: " << target_speed << "\terror: " << error << "\tint speed:" << int_speed;
 
-    if (int_speed > 32760 || int_speed < -32760)
-        int_speed = 32760;
+    
     can_frame frame;
     frame.can_id = 524;
     frame.can_dlc = 8;
@@ -113,7 +164,7 @@ void BikeXuanControl::tBikeCoreControl() {
 
 
     int n = write(socket_can_fd, &frame, sizeof(frame));
-        LOG_IF(ERROR, n==-1) << "Send Error";
+        // LOG_IF(ERROR, n==-1) << "Send Error";
     // set_motor_speed(socket_can_fd, 524, frame, kp * error);
     rate.sleep();
   }
