@@ -54,8 +54,16 @@ cansend can0 20C# 00 00 00 00 07 D0 00 00 给点击速度指令
 
   闭环模式下，手动强行转动电机
 
-
-
+socket can error write: No buffer space available
+```shell
+1、查看
+root@socfpga:/sys/class/net/can0# cat tx_queue_len
+10
+2、root@socfpga:/sys/class/net/can0# echo 4096 > tx_queue_len
+3、root@socfpga:/sys/class/net/can0# cat tx_queue_len
+4096
+4、再运行程序
+```
 ## Reference
 
 - https://blog.csdn.net/gjy_skyblue/article/details/115412902 （速度模式配置）

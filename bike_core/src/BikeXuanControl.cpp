@@ -61,23 +61,20 @@ void BikeXuanControl::tBikeCoreControl() {
   LOG_IF(FATAL, !socket_can_fd) << "Get Socket Can Instance Erros!";
   
   // TODO using yaml to save params
-  const double control_rate = 100;
+  const double control_rate = 1000;
   const double tolerance_msg_dt = 0.1;
 
   ros::Rate rate(control_rate);
 
   auto set_motor_speed = [this](const int &socket_can_fd, const canid_t &can_id,
-                                std::array<uint8_t, 8> data,
+                                can_frame &frame,
                                 float speed) -> bool {
     int16_t int_speed = static_cast<int16_t>(speed);
 
-    data.at(4) = int_speed >> 8;
-    data.at(5) = int_speed;
-    // LOG_IF(WARNING, 1) << "data[4]: " << static_cast<int>(data.at(4))
-    //                    << " data[5]: " << static_cast<int>(data.at(5));
-    int n_bytes_send = CanSendReceive::WriteDataToSocketCanDevice(
-        socket_can_fd, can_id, false, data);
-    
+    frame.data[4] = int_speed >> 8;
+    frame.data[5] = int_speed;
+    int n = write(socket_can_fd, &frame, sizeof(frame));
+        LOG_IF(ERROR, n==-1) << "Send Error";
   };
   std::array<uint8_t, 8> data;
 
@@ -87,33 +84,37 @@ void BikeXuanControl::tBikeCoreControl() {
         << "ChechSubscriberMessageTimestamp Failed!\t" <<
         []() -> std::string { return std::string("Set Motor Speed To [0.0]"); };
 
-    float target_speed = rc_ctrl_msg_ptr_->ch_x[0] / 10.0;
+    float target_speed = rc_ctrl_msg_ptr_->ch_x[0] / 5.0;
     float current_speed = odrive_can_parsed_msg_ptr_->speed;
     float error = target_speed - current_speed;
-    float kp = 3.0;
+    float kp = 1.0;
     float ki = 1.0;
     float kd = 1.0;
-    LOG_IF(WARNING, 1) << "current_speed: " << current_speed << "\t"
-                       << "target_speed: " << target_speed;
     
-    int16_t int_speed = static_cast<int16_t>(target_speed);
+    
+    int16_t int_speed = static_cast<int16_t>(error*kp);
+
+    LOG_IF(WARNING, 1) << "current_speed: " << current_speed << "\t"
+                       << "target_speed: " << target_speed << "\terror: " << error << "\tint speed:" << int_speed;
+
+    if (int_speed > 32760 || int_speed < -32760)
+        int_speed = 32760;
     can_frame frame;
     frame.can_id = 524;
-	frame.data[0] = 0x00;
-	frame.data[1] = 0x00;
-	frame.data[2] = 0x00;
-	frame.data[3] = 0x00;
-	frame.data[4] = int_speed >> 8u;
-	frame.data[5] = int_speed;
-	frame.can_dlc = 8;
-    
-    LOG_IF(WARNING, 0) << "data[4]: " << static_cast<int>(data.at(4))
-                       << " data[5]: " << static_cast<int>(data.at(5));
-    // int n_bytes_send = CanSendReceive::WriteDataToSocketCanDevice(
-    //     socket_can_fd, 524, false, data);
+    frame.can_dlc = 8;
+    frame.data[0] = 0x00;
+    frame.data[1] = 0x00;
+    frame.data[2] = 0x00;
+    frame.data[3] = 0x00;
+    frame.data[4] = int_speed >> 8;
+    frame.data[5] = int_speed;
+    frame.data[6] = 0x00;
+    frame.data[7] = 0x00;
+
+
     int n = write(socket_can_fd, &frame, sizeof(frame));
         LOG_IF(ERROR, n==-1) << "Send Error";
-    // set_motor_speed(socket_can_fd, 524, data, kp * error);
+    // set_motor_speed(socket_can_fd, 524, frame, kp * error);
     rate.sleep();
   }
   close(socket_can_fd);
