@@ -8,8 +8,9 @@
 #define Servo_Center_Max 2000  //舵机最大值
 #define Servo_Center_Min 1000  //舵机最小值
 
-typedef struct
+struct PID
 {
+  PID() : Kp(0.0), Ki(0.0), Kd(0.0){};
   float SumOut;    //增量式out
   float SumError;  //误差累积
 
@@ -19,7 +20,7 @@ typedef struct
 
   float LastError;   //上一次误差
   float LLastError;  //上上次误差
-} PID;
+};
 
 void Balance_endocyclic();
 void Balance_outcyclic();

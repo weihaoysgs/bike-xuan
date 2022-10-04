@@ -1,46 +1,43 @@
 #include "bike_core/balance.hpp"
 /*
 该文件使用需要传入
-
 两个电机的速度反馈、速度控制函数
 陀螺仪读取函数、角度、角速度
 舵机控制函数、舵机中值、最大值、最小值
 开启一个1ms的定时中断
-
 */
 
 extern float target_speed_;
 extern float current_speed;
 
-//零点
-float Pitch_Zero = -2;    //设置Pitch轴角度零点的误差值
+// 零点
+float Pitch_Zero = -2;    // 设置Pitch轴角度零点的误差值
 float Zero_error = 0.0;   // Pitch校准后的值
-float Pitch_error = 0.0;  //实际-压弯
-float angle_error = 0.0;  //压弯角度
+float Pitch_error = 0.0;  // 实际-压弯
+float angle_error = 0.0;  // 压弯角度
 
-//陀螺仪
-float Pitch;  //陀螺仪角度值
-short gyro;   //陀螺仪角速度值
+// 陀螺仪
+float Pitch;  // 陀螺仪角度值
+short gyro;   // 陀螺仪角速度值
 
-//开启标志位
-int start_pid = 0;    //动量轮开启标志位
-int start_speed = 0;  //前进和摄像头标志位
+// 开启标志位
+int start_pid = 0;    // 动量轮开启标志位
+int start_speed = 0;  // 前进和摄像头标志位
 
-//电机
-int Target_speed;      //目标速度
+// 电机
+int Target_speed;      // 目标速度
 short MotorDutyA = 0;  // 飞轮电机驱动占空比数值
 short MotorDutyB = 0;  // 后轮电机驱动占空比数值
-short BLDCduty;        //无刷电机pwm
-int target_s;          //当前目标速度
-short ECPULSE1;        //动量轮反馈速度
-short ECPULSE2;        //后轮反馈速度
+short BLDCduty;        // 无刷电机pwm
+int target_s;          // 当前目标速度
+short ECPULSE1;        // 动量轮反馈速度
+short ECPULSE2;        // 后轮反馈速度
 
-//舵机
+// 舵机
 signed short eduty = Servo_Center_Mid;
 signed short duty_target = Servo_Center_Mid;
-;
-float dy = 1.0;  //压弯模型动态参数
-float cam_err;   //摄像头反馈舵机打脚
+float dy = 1.0;  // 压弯模型动态参数
+float cam_err;   // 摄像头反馈舵机打脚
 
 // pid
 float Tar_Ang_Vel_Y, Target_Angle_Y;
@@ -55,27 +52,17 @@ float Speed_out, Angle_out;
 我的参数，PWM最大是10000，仅供参考哈
 */
 
-//无刷参数  8.4
+// 无刷参数  8.4
+// 角速度环参数
+PID Ang_Vel_PID;
+// 角度环
+PID Angle_PID;
+// 速度环
+PID MOTOR_PID;
 
-PID Ang_Vel_PID = {  //角速度环参数
-  .Kp = 0.0,
-  .Ki = 0.0,
-  .Kd = 0.0
-};
-PID Angle_PID = {  //角度环
-  .Kp = 0.0,
-  .Ki = 0.0,
-  .Kd = 0.0
-};
-PID MOTOR_PID = {  //速度环
-  .Kp = 0.0,
-  .Ki = 0.0,
-  .Kd = 0.0
-};
+PID Speed_PID;
 
-PID Speed_PID = { .Kp = 0.0, .Ki = 0.0, .Kd = 0.0 };
-
-int sloap(int target, int add)  //斜坡函数
+int sloap(int target, int add)  // 斜坡函数
 {
   int speed;
   speed = target_s;
@@ -94,7 +81,7 @@ int sloap(int target, int add)  //斜坡函数
   return speed;
 }
 
-signed short duty_sloap(signed short target, int add)  //舵机斜坡函数
+signed short duty_sloap(signed short target, int add)  // 舵机斜坡函数
 {
   signed short duty;
   duty = duty_target;
@@ -119,14 +106,14 @@ signed short duty_sloap(signed short target, int add)  //舵机斜坡函数
 
 float turn_model(signed short duty, short ecpulse)
 {
-  float angle = 0.0;  //转弯角度
-  float speed = 0.0;  //速度
-  // float L=0.193;                         //两轮轴距
+  float angle = 0.0;  // 转弯角度
+  float speed = 0.0;  // 速度
+  // float L=0.193;                         // 两轮轴距
   float error = 0.0;
   float co = 0.0;
   float sp2 = 0.0;
   duty = duty - Servo_Center_Mid;
-  angle = duty * 0.1;       //单位度
+  angle = duty * 0.1;       // 单位度
   speed = ecpulse * 0.009;  // m/s
   sp2 = speed * speed;
 
@@ -135,7 +122,7 @@ float turn_model(signed short duty, short ecpulse)
   return error;
 }
 
-//增量式pid
+// 增量式pid
 float IncP_DCalc(PID* sptr, float s, float target)
 {
   float incout;
@@ -150,32 +137,32 @@ float IncP_DCalc(PID* sptr, float s, float target)
   return sptr->SumOut;
 }
 
-//位置式pid
+// 位置式pid
 float LocP_DCalc(PID* sptr, float s, float target, float imax, float imin, float limit_max, float limit_min)
 {
   float iError, dError;
   float output;
 
-  iError = s - target;  //偏差
+  iError = s - target;  // 偏差
 
   if (iError > limit_max && iError < limit_min)
     iError = iError * 0.1;
 
-  sptr->SumError += iError;  //积分(采样时间很短时，用一阶差分代替一阶微分，用累加代替积分)
-  dError = (float)(iError - (sptr->LastError));  //微分
+  sptr->SumError += iError;  // 积分(采样时间很短时，用一阶差分代替一阶微分，用累加代替积分)
+  dError = (float)(iError - (sptr->LastError));  // 微分
   sptr->LastError = iError;
 
   if (sptr->SumError > imax)
     sptr->SumError = imax;
   if (sptr->SumError < imin)
     sptr->SumError = imin;
-  output = (float)(sptr->Kp * iError              //比例项
-                   + (sptr->Ki * sptr->SumError)  //积分项
-                   + sptr->Kd * dError);          //微分项
+  output = (float)(sptr->Kp * iError              // 比例项
+                   + (sptr->Ki * sptr->SumError)  // 积分项
+                   + sptr->Kd * dError);          // 微分项
   return (output);
 }
 
-//限幅函数
+// 限幅函数
 float range_protect(float num, float min, float max)
 {
   if (num >= max)
@@ -185,7 +172,7 @@ float range_protect(float num, float min, float max)
   return num;
 }
 
-//积分清零
+// 积分清零
 void Integral_clear(void)
 {
   Ang_Vel_PID.SumError = 0;
@@ -209,9 +196,9 @@ void Integral_clear(void)
   Speed_PID.LastError = 0;
 }
 
-//串级的基本思想，最内环角速度环，内环角度环，外环速度环，外环的输出作为内环的输入，外环输出内环目标值。比如速度环输出的是角度环的目标角度，目标角度
-//与实际解算角度做偏差进行PID计算输出角速度环，角度环和角速度环相同道理，最内环角速度环输出PWM控制电机。
-void Balance_endocyclic()  //角速度最内环2ms中断
+// 串级的基本思想，最内环角速度环，内环角度环，外环速度环，外环的输出作为内环的输入，外环输出内环目标值。比如速度环输出的是角度环的目标角度，目标角度
+// 与实际解算角度做偏差进行PID计算输出角速度环，角度环和角速度环相同道理，最内环角速度环输出PWM控制电机。
+void Balance_endocyclic()  // 角速度最内环2ms中断
 {
   static short gyro_last;
   /*
@@ -222,7 +209,7 @@ void Balance_endocyclic()  //角速度最内环2ms中断
   gyro = gyro * 0.8 + gyro_last * 0.2;
   gyro_last = gyro;
 
-  MotorDutyA = LocP_DCalc(&Ang_Vel_PID, (-gyro * 0.08), Tar_Ang_Vel_Y, 2000, -2000, 70, -70);  //角速度环输出PWM控制电机
+  MotorDutyA = LocP_DCalc(&Ang_Vel_PID, (-gyro * 0.08), Tar_Ang_Vel_Y, 2000, -2000, 70, -70);  // 角速度环输出PWM控制电机
   MotorDutyA = range_protect(MotorDutyA, -8000, 8000);                                         // PWM输出限幅
   //    if(MotorDutyA<-0) MotorDutyA -=100;    //死区（暂时不用，没必要用，要用的话自己测一下死区占空比）
   //    else if(MotorDutyA>0) MotorDutyA+=100; //死区
@@ -239,15 +226,15 @@ void Balance_endocyclic()  //角速度最内环2ms中断
     duty_target = Servo_Center_Mid;
   }
 
-  target_speed_ = MotorDutyA;  //无刷电机pwm
+  target_speed_ = MotorDutyA;  // 无刷电机pwm
 }
 
-void Balance_outcyclic()  //角度内环10ms
+void Balance_outcyclic()  // 角度内环10ms
 {
   static short ECPULSE2_LAST;
   /*
-      修改
-      ECPULSE2 = ENC_GetCounter(ENC2_InPut_P33_7);//后轮反馈
+    修改
+    ECPULSE2 = ENC_GetCounter(ENC2_InPut_P33_7);// 后轮反馈
   */
   ECPULSE2 = ECPULSE2 * 0.3 + ECPULSE2_LAST * 0.7;
   ECPULSE2_LAST = ECPULSE2;
@@ -260,18 +247,18 @@ void Balance_outcyclic()  //角度内环10ms
     MotorDutyB = 0;
   MotorDutyB = range_protect(MotorDutyB, -3000, 3000);
   /*
-      修改
-      Motor(MotorDutyB); //后轮电机输出
+    修改
+    Motor(MotorDutyB); // 后轮电机输出
   */
-  eduty = cam_err;  //不融合舵机
+  eduty = cam_err;  // 不融合舵机
   duty_target = duty_sloap(eduty, 15);
 
   /*
-      修改
-      ATOM_PWM_SetDuty(ATOMSERVO2, duty_target, 100);  //舵机改变占空比
+    修改
+    ATOM_PWM_SetDuty(ATOMSERVO2, duty_target, 100);  // 舵机改变占空比
   */
 
-  angle_error = turn_model(duty_target, ECPULSE2) * dy;  //压弯模型
+  angle_error = turn_model(duty_target, ECPULSE2) * dy;  // 压弯模型
 
   if (angle_error > 20.0)
     angle_error = 20.0;
@@ -279,13 +266,13 @@ void Balance_outcyclic()  //角度内环10ms
     angle_error = -20.0;
   Pitch_error = Zero_error - angle_error;
 
-  Angle_out = LocP_DCalc(&Angle_PID, Pitch_error, Target_Angle_Y, 100, -100, 20, -20);  //角度环输出目标角速度
-  Tar_Ang_Vel_Y = range_protect(Angle_out, -300, 300);                                  //目标角速度限幅
+  Angle_out = LocP_DCalc(&Angle_PID, Pitch_error, Target_Angle_Y, 100, -100, 20, -20);  // 角度环输出目标角速度
+  Tar_Ang_Vel_Y = range_protect(Angle_out, -300, 300);                                  // 目标角速度限幅
 }
-void Speed_control()  //速度外环100ms
+void Speed_control()  // 速度外环100ms
 {
   ECPULSE1 = current_speed;  // 动量轮编码器反馈
 
-  Speed_out = LocP_DCalc(&MOTOR_PID, -ECPULSE1, 3.0, 200, -200, 30, -30);  //速度环输出目标角度
-  Target_Angle_Y = range_protect(Speed_out, -30, 30);                      //目标角度限幅
+  Speed_out = LocP_DCalc(&MOTOR_PID, -ECPULSE1, 3.0, 200, -200, 30, -30);  // 速度环输出目标角度
+  Target_Angle_Y = range_protect(Speed_out, -30, 30);                      // 目标角度限幅
 }
