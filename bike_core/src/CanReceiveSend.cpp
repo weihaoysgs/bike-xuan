@@ -113,3 +113,36 @@ void CanSendReceive::ParserSpecialCanMessage(
     //           << "Position: " << *position;
   }
 }
+
+
+
+int CanSendReceive::GetOneSocketCanSendInstance(const char *port_name) {
+  int s;
+  struct sockaddr_can addr;
+  struct ifreq ifr;
+
+  if ((s = socket(PF_CAN, SOCK_RAW, CAN_RAW)) < 0) {
+    LOG(FATAL) << "Socket Can Get Error";
+    return -1;
+  }
+
+  strncpy(ifr.ifr_name, port_name, IFNAMSIZ - 1);
+  ifr.ifr_name[IFNAMSIZ - 1] = '\0';
+  ifr.ifr_ifindex = if_nametoindex(ifr.ifr_name);
+  if (!ifr.ifr_ifindex) {
+    LOG(FATAL) << "if_nametoindex";
+    return -1;
+  }
+
+  memset(&addr, 0, sizeof(addr));
+  addr.can_family = AF_CAN;
+  addr.can_ifindex = ifr.ifr_ifindex;
+
+  setsockopt(s, SOL_CAN_RAW, CAN_RAW_FILTER, NULL, 0);
+
+  if (bind(s, (struct sockaddr *)&addr, sizeof(addr)) < 0) {
+    LOG(FATAL) << "Bind Socket Can Error";
+    return -1;
+  }
+  return s;
+}

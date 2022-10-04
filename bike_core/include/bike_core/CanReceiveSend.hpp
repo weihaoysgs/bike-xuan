@@ -10,9 +10,9 @@
 #include <sys/socket.h>
 
 #include <chrono>
-#include <tuple>
 #include <memory>
 #include <thread>
+#include <tuple>
 
 #include "bike_core/odrive_can_msg.h"
 #include "bike_core/odrive_motor_feedback_msg.h"
@@ -33,6 +33,7 @@ class CanSendReceive {
                                         const canid_t &can_id,
                                         const bool is_RTR,
                                         const std::array<uint8_t, 8> &data);
+  static int GetOneSocketCanSendInstance(const char *port_name);
 
  private:
   std::string receive_can_port_name_;
