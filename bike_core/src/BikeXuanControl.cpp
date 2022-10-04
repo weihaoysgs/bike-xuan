@@ -66,16 +66,14 @@ void BikeXuanControl::tBikeCoreControl() {
   const std::string can_port_name = "can0";
   const int socket_can_fd =
       CanSendReceive::GetOneSocketCanSendInstance(can_port_name.c_str());
-  //   CanSendReceive::GetOneSocketCanInstance(can_port_name);
+
   LOG_IF(FATAL, !socket_can_fd) << "Get Socket Can Instance Erros!";
 
   // TODO using yaml to save params
   const double control_rate = 1000;
   const double tolerance_msg_dt = 0.1;
-
+  geometry_msgs::Vector3 &gyro_msg = bike_xuan_imu_msg_ptr_->angular_velocity;
   ros::Rate rate(control_rate);
-
-  std::array<uint8_t, 8> data;
 
   while (ros::ok()) {
     // TODO set the target motor speed 0.0
@@ -88,10 +86,6 @@ void BikeXuanControl::tBikeCoreControl() {
     current_speed = odrive_can_parsed_msg_ptr_->speed;
 
     int16_t int_speed = static_cast<int16_t>(target_remote_speed);
-
-    // LOG_IF(WARNING, 1) << "current_speed: " << current_speed << "\t"
-    //                    << "target_speed: " << target_speed << "\terror: " <<
-    //                    error << "\tint speed:" << int_speed;
 
     can_frame frame;
     frame.can_id = 524;
