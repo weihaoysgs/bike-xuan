@@ -6,6 +6,7 @@
 #include <linux/can/raw.h>
 #include <net/if.h>
 #include <ros/ros.h>
+#include <sensor_msgs/Imu.h>
 #include <sys/ioctl.h>
 #include <sys/socket.h>
 
