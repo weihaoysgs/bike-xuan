@@ -6,6 +6,7 @@ BikeXuanControl::BikeXuanControl() : nh_("~") {
   rc_ctrl_msg_ptr_ = std::make_shared<bike_core::remote_control_msg>();
   odrive_src_can_msg_ptr_ = std::make_shared<bike_core::odrive_can_msg>();
   bike_xuan_imu_msg_ptr_ = std::make_shared<sensor_msgs::Imu>();
+  imu_ch100_pose_ptr_ = std::make_shared<ImuPose>();
   odrive_can_parsed_msg_ptr_ =
       std::make_shared<bike_core::odrive_motor_feedback_msg>();
   sub_can_src_msg_ = nh_.subscribe<bike_core::odrive_can_msg>(
