@@ -1,0 +1,5 @@
+<launch>
+    <!-- launch IMUCH100 -->
+    <include file="$(find imu_launch)/launch/imu_msg.launch"/>
+    
+</launch>
