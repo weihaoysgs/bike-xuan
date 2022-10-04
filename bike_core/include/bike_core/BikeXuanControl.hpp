@@ -1,17 +1,18 @@
 #ifndef BIKEXUAN_CONTROL_HPP
 #define BIKEXUAN_CONTROL_HPP
 
+#include "bike_core/Balance.hpp"
 #include "bike_core/CanReceiveSend.hpp"
 #include "bike_core/odrive_can_msg.h"
 #include "bike_core/odrive_motor_feedback_msg.h"
 #include "bike_core/remote_control_msg.h"
-#include "bike_core/Balance.hpp"
 
 class BikeXuanControl {
  public:
   BikeXuanControl();
   ~BikeXuanControl() = default;
   const bool ChechSubscriberMessageTimestamp() const;
+
  private:
   void SubOdriveCanSourceMessageCB(
       const bike_core::odrive_can_msg::ConstPtr &msg) {
@@ -36,7 +37,20 @@ class BikeXuanControl {
                        << " "
                        << "Can ID: " << odrive_can_parsed_msg_ptr_->can_id;
   };
-  void SubIMUCH100MessageCallback();
+  void SubIMUCH100MessageCallback(const sensor_msgs::Imu::ConstPtr &msg) {
+    *bike_xuan_imu_msg_ptr_.get() = *msg;
+    LOG_IF(WARNING, 0)
+        << "Acc x: " << bike_xuan_imu_msg_ptr_->angular_velocity.x << " "
+        << "Acc y: " << bike_xuan_imu_msg_ptr_->angular_velocity.y << " "
+        << "Acc z: " << bike_xuan_imu_msg_ptr_->angular_velocity.z << " "
+        << "Gyro x: " << bike_xuan_imu_msg_ptr_->linear_acceleration.x << " "
+        << "Gyro y: " << bike_xuan_imu_msg_ptr_->linear_acceleration.y << " "
+        << "Gyro z: " << bike_xuan_imu_msg_ptr_->linear_acceleration.z << " "
+        << "Q x: " << bike_xuan_imu_msg_ptr_->orientation.x << " "
+        << "Q y: " << bike_xuan_imu_msg_ptr_->orientation.y << " "
+        << "Q z: " << bike_xuan_imu_msg_ptr_->orientation.z << " "
+        << "Q w: " << bike_xuan_imu_msg_ptr_->orientation.w;
+  };
 
  private:
   // void timerthreadBikeCoreControl(const ros::TimerEvent &event);
@@ -52,6 +66,7 @@ class BikeXuanControl {
   ros::Timer bike_balance_timer_;
   std::shared_ptr<bike_core::remote_control_msg> rc_ctrl_msg_ptr_;
   std::shared_ptr<bike_core::odrive_can_msg> odrive_src_can_msg_ptr_;
+  std::shared_ptr<sensor_msgs::Imu> bike_xuan_imu_msg_ptr_;
   std::shared_ptr<bike_core::odrive_motor_feedback_msg>
       odrive_can_parsed_msg_ptr_;
 };

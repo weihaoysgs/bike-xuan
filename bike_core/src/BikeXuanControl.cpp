@@ -5,6 +5,7 @@ float current_speed;
 BikeXuanControl::BikeXuanControl() : nh_("~") {
   rc_ctrl_msg_ptr_ = std::make_shared<bike_core::remote_control_msg>();
   odrive_src_can_msg_ptr_ = std::make_shared<bike_core::odrive_can_msg>();
+  bike_xuan_imu_msg_ptr_ = std::make_shared<sensor_msgs::Imu>();
   odrive_can_parsed_msg_ptr_ =
       std::make_shared<bike_core::odrive_motor_feedback_msg>();
   sub_can_src_msg_ = nh_.subscribe<bike_core::odrive_can_msg>(
@@ -16,6 +17,10 @@ BikeXuanControl::BikeXuanControl() : nh_("~") {
       nh_.subscribe<bike_core::odrive_motor_feedback_msg>(
           "/can_send_receive_node/odrive_motor_parsed_data", 10,
           &BikeXuanControl::SubOdriveMotorFeedbackParsedMessageCB, this);
+
+  sub_imu_ch100_msg_ = nh_.subscribe<sensor_msgs::Imu>(
+      "/IMU_data", 1, &BikeXuanControl::SubIMUCH100MessageCallback, this);
+
   bike_balance_timer_ = nh_.createTimer(ros::Duration(1.0 / 1000),
                                         &BikeXuanControl::timerBalance, this);
 
@@ -81,7 +86,7 @@ void BikeXuanControl::tBikeCoreControl() {
     float target_remote_speed = rc_ctrl_msg_ptr_->ch_x[0] / 5.0;
 
     current_speed = odrive_can_parsed_msg_ptr_->speed;
-    
+
     int16_t int_speed = static_cast<int16_t>(target_remote_speed);
 
     // LOG_IF(WARNING, 1) << "current_speed: " << current_speed << "\t"
