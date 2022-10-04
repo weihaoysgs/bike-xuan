@@ -1,5 +1,8 @@
-#ifndef _BLANCE_H_
-#define _BLANCE_H_
+#ifndef BLANCE_H
+#define BLANCE_H
+
+#include <iostream>
+#include <cmath>
 
 #define Servo_Center_Mid 1500  //舵机中值
 #define Servo_Center_Max 2000  //舵机最大值
