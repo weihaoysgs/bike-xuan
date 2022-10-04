@@ -5,7 +5,7 @@
 #include "bike_core/odrive_can_msg.h"
 #include "bike_core/odrive_motor_feedback_msg.h"
 #include "bike_core/remote_control_msg.h"
-#include "bike_core/balance.hpp"
+#include "bike_core/Balance.hpp"
 
 class BikeXuanControl {
  public:

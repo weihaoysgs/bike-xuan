@@ -104,7 +104,7 @@ node/BikeXuanCoreControlNode.cpp
 src/CanReceiveSend.cpp
 src/BikeXuanControl.cpp
 src/RemoteControlParser.cpp
-src/balance.cpp
+src/Balance.cpp
 ${parser_remote_data_node_header_SRC}
 )
 target_link_libraries(bike_xuan_core_control_node

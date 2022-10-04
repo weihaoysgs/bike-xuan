@@ -1,4 +1,4 @@
-#include "bike_core/balance.hpp"
+#include "bike_core/Balance.hpp"
 /*
 该文件使用需要传入
 两个电机的速度反馈、速度控制函数
