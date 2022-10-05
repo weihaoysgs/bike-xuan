@@ -26,7 +26,10 @@ struct PidParams {
   ~PidParams() = default;
   std::string pid_name_;
   double kp_{0.0}, ki_{0.0}, kd_{0.0};
-  double last_error_{0.0};
+  double last_error_{0.0}, error_{0.0}, error_integral_{0.0};
+  double target_{0.0}, current_{0.0};
+  double output_{0.0};
+  double pid_error_integral_limit_{0.0};
   double output_limit_{0.0};
 };
 
@@ -35,6 +38,7 @@ class BikePid {
   explicit BikePid();
   ~BikePid() = default;
   float operator()(const float target, float current) const;
+  const float CalculateBikeXxuanSpeedPid(float target, float current) const;
 
  public:
   static BikePid& getInstance() {
