@@ -59,12 +59,12 @@ class BikeXuanControl {
              imu_ch100_pose_ptr_->yaw_);
     LOG_IF(WARNING, 0) << std::setprecision(3) << std::setiosflags(std::ios::fixed) 
                        << std::setiosflags(std::ios::left) << setiosflags(std::ios::showpos) 
-        << std::setw(7) << "Acc x: " << std::setw(5) << bike_xuan_imu_msg_ptr_->angular_velocity.x << " "
-        << std::setw(7) << "Acc y: " << std::setw(5) << bike_xuan_imu_msg_ptr_->angular_velocity.y << " "
-        << std::setw(7) << "Acc z: " << std::setw(5) << bike_xuan_imu_msg_ptr_->angular_velocity.z << " "
-        << std::setw(7) << "Gyro x: " << std::setw(5) << bike_xuan_imu_msg_ptr_->linear_acceleration.x << " "
-        << std::setw(7) << "Gyro y: " << std::setw(5) << bike_xuan_imu_msg_ptr_->linear_acceleration.y << " "
-        << std::setw(7) << "Gyro z: " << std::setw(5) << bike_xuan_imu_msg_ptr_->linear_acceleration.z << " "
+        << std::setw(7) << "Acc x: " << std::setw(5) << bike_xuan_imu_msg_ptr_->linear_acceleration.x << " "
+        << std::setw(7) << "Acc y: " << std::setw(5) << bike_xuan_imu_msg_ptr_->linear_acceleration.y << " "
+        << std::setw(7) << "Acc z: " << std::setw(5) << bike_xuan_imu_msg_ptr_->linear_acceleration.z << " "
+        << std::setw(7) << "Gyro x: " << std::setw(5) << bike_xuan_imu_msg_ptr_->angular_velocity.x  << " "
+        << std::setw(7) << "Gyro y: " << std::setw(5) << bike_xuan_imu_msg_ptr_->angular_velocity.y  << " "
+        << std::setw(7) << "Gyro z: " << std::setw(5) << bike_xuan_imu_msg_ptr_->angular_velocity.z  << " "
         << std::setw(7) << "Yaw: :" << std::setw(5) << radian2angle(imu_ch100_pose_ptr_->yaw_) << " "
         << std::setw(7) << "Pitch: :" << std::setw(5) << radian2angle(imu_ch100_pose_ptr_->pitch_) << " "
         << std::setw(7) << "Roll: :" << std::setw(5) << radian2angle(imu_ch100_pose_ptr_->roll_) << std::endl;
