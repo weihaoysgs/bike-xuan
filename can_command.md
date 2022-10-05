@@ -46,6 +46,7 @@ cansend can0 20C# 00 00 00 00 07 D0 00 00 给点击速度指令
 - 该参数控制的是 odrive 运行时的电流限制大小
 <pre>odrv0.axis0.motor.config.current_lim = <font color="#008700">12</font></pre>
 > 注意，按照道理来说，如果想要达到一个非常高的电机响应，上面的几个值都应该是比较大的，但是本人在配置的时候却发现过大容易出现电机脱离闭环，触发 odrive 的内部电流保护机制，此时将 current_limit 调低能够有所缓解。
+
 ## Erros
 
 - MotorError.CURRENT_SENSE_SATURATION
