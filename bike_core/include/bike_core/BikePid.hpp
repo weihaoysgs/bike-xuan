@@ -23,6 +23,7 @@ struct PidParams {
                        << "\tPid.Name: " << pid_name_
                        << "\tOutput.Limit: " << output_limit_;
   };
+  enum PidType { INCREMENTAL, POSITION };
   ~PidParams() = default;
   std::string pid_name_;
   double kp_{0.0}, ki_{0.0}, kd_{0.0};
@@ -37,8 +38,16 @@ class BikePid {
  public:
   explicit BikePid();
   ~BikePid() = default;
-  float operator()(const float target, float current) const;
-  const float CalculateBikeXxuanSpeedPid(float target, float current) const;
+  float operator()(const float target, const float current,
+                   const PidParams::PidType PID_TYPE,
+                   std::shared_ptr<PidParams> pid) const;
+  const float CalculatePositionSpeedPid(float target, float current,
+                                        std::shared_ptr<PidParams> pid) const;
+  std::shared_ptr<PidParams> getAngleVelocityPid() const {
+    return angle_vel_pid_ptr_;
+  };
+  std::shared_ptr<PidParams> getAnglePid() const { return angle_pid_ptr_; };
+  std::shared_ptr<PidParams> getSpeedPid() const { return speed_pid_ptr_; };
 
  public:
   static BikePid& getInstance() {

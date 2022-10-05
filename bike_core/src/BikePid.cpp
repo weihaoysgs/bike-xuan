@@ -26,10 +26,21 @@ const float BikePid::CalculateBikeXxuanSpeedPid(float target,
   speed_pid_ptr_->error_integral_ += speed_pid_ptr_->error_;
 
   double p_out = speed_pid_ptr_->kp_ * speed_pid_ptr_->error_;
-	double i_out = speed_pid_ptr_->ki_ * speed_pid_ptr_->error_integral_;
-	double d_out = speed_pid_ptr_->kd_ * (speed_pid_ptr_->error_ - speed_pid_ptr_->last_error_);
-	
-	speed_pid_ptr_->output_ = p_out + i_out + d_out;
+  double i_out = speed_pid_ptr_->ki_ * speed_pid_ptr_->error_integral_;
+  double d_out = speed_pid_ptr_->kd_ *
+                 (speed_pid_ptr_->error_ - speed_pid_ptr_->last_error_);
+
+  speed_pid_ptr_->output_ = p_out + i_out + d_out;
   speed_pid_ptr_->last_error_ = speed_pid_ptr_->error_;
+
+  LOG_IF(WARNING, 0) << std::setprecision(4) << std::setiosflags(std::ios::fixed)
+                     << setiosflags(std::ios::showpos)
+                     << "Pid.Kp: " << speed_pid_ptr_->kp_
+                     << "\tPid.Ki: " << speed_pid_ptr_->ki_
+                     << "\tPid.Kd: " << speed_pid_ptr_->kd_
+                     << "\tPid.error: " << speed_pid_ptr_->error_
+                     << "\tPid.Kd: " << speed_pid_ptr_->kd_
+                     << "\tPid.Output: " << speed_pid_ptr_->output_;
+
   return speed_pid_ptr_->output_;
 }
