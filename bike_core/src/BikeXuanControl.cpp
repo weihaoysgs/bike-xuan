@@ -105,20 +105,16 @@ void BikeXuanControl::tBikeCoreControl() {
                     roll_angle_error_kp * roll_angle_error;
     int16_t int_speed = static_cast<int16_t>(target_remote_speed);
 
-    can_frame frame;
-    frame.can_id = 524;
-    frame.can_dlc = 8;
-    frame.data[0] = 0x00;
-    frame.data[1] = 0x00;
-    frame.data[2] = 0x00;
-    frame.data[3] = 0x00;
-    frame.data[4] = int_speed >> 8;
-    frame.data[5] = int_speed;
-    frame.data[6] = 0x00;
-    frame.data[7] = 0x00;
+    
 
-    int n = write(socket_can_fd, &frame, sizeof(frame));
-    LOG_IF(ERROR, n == -1) << "Send Error";
+
+
+
+
+
+    
+    CanSendReceive::WriteDataToSocketCanDeviceControlMotor(socket_can_fd, 524,
+                                                           int_speed);
     rate.sleep();
   }
   close(socket_can_fd);

@@ -53,7 +53,7 @@ int CanSendReceive::GetOneSocketCanInstance(const std::string &can_port_name) {
   addr.can_family = AF_CAN;
   addr.can_ifindex = ifr.ifr_ifindex;
   int bind_ret = bind(socket_can, (struct sockaddr *)&addr,
-             sizeof(addr));  // bind the socket and canx
+                      sizeof(addr));  // bind the socket and canx
   LOG_IF(FATAL, socket_can == -1 || bind_ret < 0)
       << "Socket Can " + can_port_name + " Open Failed ";
   return socket_can;
@@ -114,8 +114,6 @@ void CanSendReceive::ParserSpecialCanMessage(
   }
 }
 
-
-
 int CanSendReceive::GetOneSocketCanSendInstance(const char *port_name) {
   int s;
   struct sockaddr_can addr;
@@ -145,4 +143,23 @@ int CanSendReceive::GetOneSocketCanSendInstance(const char *port_name) {
     return -1;
   }
   return s;
+}
+
+int CanSendReceive::WriteDataToSocketCanDeviceControlMotor(
+    const int &socket_can_fd, const canid_t &can_id, const int16_t int_speed) {
+
+  can_frame frame;
+  frame.can_id = can_id;
+  frame.can_dlc = 8;
+  frame.data[0] = 0x00;
+  frame.data[1] = 0x00;
+  frame.data[2] = 0x00;
+  frame.data[3] = 0x00;
+  frame.data[4] = int_speed >> 8;
+  frame.data[5] = int_speed;
+  frame.data[6] = 0x00;
+  frame.data[7] = 0x00;
+
+  int n = write(socket_can_fd, &frame, sizeof(frame));
+  LOG_IF(ERROR, n == -1) << "Send Error";
 }

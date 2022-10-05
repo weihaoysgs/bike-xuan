@@ -64,6 +64,17 @@ class CanSendReceive {
    */
   static int GetOneSocketCanSendInstance(const char *port_name);
 
+  /**
+   * \brief send can frame to odrive control motor speed
+   * \param socket_can_fd socket can fd instance
+   * \param can_id socked can id
+   * \param speed motor speed
+   * \retval the bytes of send, if -1, send error
+   */
+  static int WriteDataToSocketCanDeviceControlMotor(const int &socket_can_fd,
+                                                    const canid_t &can_id,
+                                                    const int16_t speed);
+
  private:
   std::string receive_can_port_name_;
   ros::NodeHandle nh_;
