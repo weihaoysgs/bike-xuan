@@ -42,7 +42,7 @@ cansend can0 20C# 00 00 00 00 07 D0 00 00 给点击速度指令
 - 该参数控制的是电机的加速度的大小，当加速度过小的时候，是没办法达到一个及时相应的。
 <pre>odrv0.axis0.controller.config.vel_ramp_rate = <font color="#008700">1000</font></pre>
 - 该参数控制的是电机速度环的一个 kp 值，但初始化一般为 0.2 具体要根据自己的系统进行调节。
-<pre>odrv0.axis0.controller.config.vel_gain = <font color="#008700"> 0.9543</font></pre>
+<pre>odrv0.axis0.controller.config.vel_gain = <font color="#008700"> 0.3</font></pre>
 - 该参数控制的是 odrive 运行时的电流限制大小
 <pre>odrv0.axis0.motor.config.current_lim = <font color="#008700">12</font></pre>
 > 注意，按照道理来说，如果想要达到一个非常高的电机响应，上面的几个值都应该是比较大的，但是本人在配置的时候却发现过大容易出现电机脱离闭环，触发 odrive 的内部电流保护机制，此时将 current_limit 调低能够有所缓解。
@@ -78,3 +78,17 @@ root@socfpga:/sys/class/net/can0# cat tx_queue_len
 
 - https://blog.csdn.net/gjy_skyblue/article/details/115412902 （速度模式配置）
 - https://blog.csdn.net/gjy_skyblue/article/details/115134590  (电流环配置)
+
+
+
+
+
+```c++
+// bike pour left the error is positive
+float roll_angle_error =
+balance_roll_angle - radian2angle(imu_ch100_pose_ptr_->roll_);
+// 车子向右倾斜会输出正的角速度，向左会输出负的角速度
+float gyro_speed_error = gyro_msg.x;
+// 电机向右转速度为负数，向左转速度为正数
+current_speed = odrive_can_parsed_msg_ptr_->speed;
+```
