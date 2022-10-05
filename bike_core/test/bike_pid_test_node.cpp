@@ -14,8 +14,8 @@ void InitGlog() {
 int main(int argc, char** argv) {
   InitGlog();
   ros::init(argc, argv, "bike_pid_test_node");
-  BikePid bike_pid;
-  float test = bike_pid(0, 0);
+  // BikePid bike_pid;
+  // float test = bike_pid(0, 0);
   ros::spin();
   return 0;
 }
