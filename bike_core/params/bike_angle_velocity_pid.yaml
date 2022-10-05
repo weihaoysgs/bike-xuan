@@ -1,0 +1,7 @@
+%YAML:1.0
+---
+Pid.Name: bike_angle_pid
+Kp: 1.0
+Ki: 1.0
+Kd: 1.0
+Output.Limit: 20.0
