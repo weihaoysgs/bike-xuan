@@ -91,6 +91,16 @@ target_link_libraries(test_can_send_receive_node
   ${catkin_LIBRARIES}
   glog
 )
+# odrive can 数据接受以及解析节点
+add_executable(bike_pid_test_node
+test/bike_pid_test_node.cpp
+src/BikePid.cpp
+)
+target_link_libraries(bike_pid_test_node
+  ${catkin_LIBRARIES}
+  glog
+)
+
 
 # odrive can 数据接受以及解析节点
 add_executable(can_send_receive_node
