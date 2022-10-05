@@ -76,6 +76,8 @@ void BikeXuanControl::tBikeCoreControl() {
   geometry_msgs::Vector3 &gyro_msg = bike_xuan_imu_msg_ptr_->angular_velocity;
   ros::Rate rate(control_rate);
 
+  constexpr double balance_roll_angle = 0.0;
+
   while (ros::ok()) {
     // TODO set the target motor speed 0.0
     LOG_IF(FATAL, !ChechSubscriberMessageTimestamp())
@@ -83,8 +85,18 @@ void BikeXuanControl::tBikeCoreControl() {
         []() -> std::string { return std::string("Set Motor Speed To [0.0]"); };
 
     float target_remote_speed = rc_ctrl_msg_ptr_->ch_x[0] / 5.0;
-
+    // bike pour left the error is positive
+    float roll_angle_error = balance_roll_angle - imu_ch100_pose_ptr_->roll_;
+    // 车子向右倾斜会输出正的角速度，向左会输出负的角速度
+    float gyro_speed_error = gyro_msg.y;
+    // 电机向右转速度为负数，向左转速度为正数
     current_speed = odrive_can_parsed_msg_ptr_->speed;
+
+    LOG_IF(INFO, 1) << std::setprecision(4) << std::setiosflags(std::ios::fixed)
+                    << setiosflags(std::ios::showpos)
+                    << "roll_angle_error: " << radian2angle(roll_angle_error)
+                    << "\tgyro_speed_error: " << gyro_speed_error
+                    << "\tcurrent_speed: " << current_speed;
 
     int16_t int_speed = static_cast<int16_t>(target_remote_speed);
 
