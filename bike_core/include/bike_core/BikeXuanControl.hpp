@@ -6,6 +6,7 @@
 #include "bike_core/odrive_can_msg.h"
 #include "bike_core/odrive_motor_feedback_msg.h"
 #include "bike_core/remote_control_msg.h"
+#include "bike_core/BikePid.hpp"
 
 struct ImuPose {
   ImuPose() : yaw_(0.0), roll_(0.0), pitch_(0.0){};

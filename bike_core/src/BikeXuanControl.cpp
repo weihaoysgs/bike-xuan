@@ -78,6 +78,8 @@ void BikeXuanControl::tBikeCoreControl() {
 
   constexpr double balance_roll_angle = 5.0;
 
+  BikePid bike_pid;
+
   while (ros::ok()) {
     // TODO set the target motor speed 0.0
     LOG_IF(FATAL, !ChechSubscriberMessageTimestamp())
@@ -93,26 +95,23 @@ void BikeXuanControl::tBikeCoreControl() {
     // 电机向右转速度为负数，向左转速度为正数
     current_speed = odrive_can_parsed_msg_ptr_->speed;
 
-    LOG_IF(INFO, 1) << std::setprecision(4) << std::setiosflags(std::ios::fixed)
+    LOG_IF(INFO, 0) << std::setprecision(4) << std::setiosflags(std::ios::fixed)
                     << setiosflags(std::ios::showpos)
                     << "roll_angle_error: " << roll_angle_error
                     << "\tgyro_speed_error: " << gyro_speed_error
                     << "\tcurrent_speed: " << current_speed;
 
-    float roll_angle_error_kp = 7.0;
-    float gyro_speed_error_kp = 30.0;
-    float out_put = -gyro_speed_error * gyro_speed_error_kp +
-                    roll_angle_error_kp * roll_angle_error;
-    int16_t int_speed = static_cast<int16_t>(target_remote_speed);
-
-    
+    float out = bike_pid(0, gyro_msg.x, PidParams::POSITION, bike_pid.getAngleVelocityPid());
 
 
 
 
 
 
-    
+
+
+    int16_t int_speed = static_cast<int16_t>(out);
+
     CanSendReceive::WriteDataToSocketCanDeviceControlMotor(socket_can_fd, 524,
                                                            int_speed);
     rate.sleep();

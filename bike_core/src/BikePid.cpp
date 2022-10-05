@@ -14,33 +14,43 @@ BikePid::BikePid() {
   angle_vel_pid_ptr_ = std::make_shared<PidParams>(angle_vel_pid_file);
 }
 
-float BikePid::operator()(const float target, float current) const {
-  LOG(INFO) << "calculate PID";
+float BikePid::operator()(const float target, const float current,
+                          const PidParams::PidType PID_TYPE,
+                          std::shared_ptr<PidParams> pid) const {
+  switch (PID_TYPE) {
+    case PidParams::PidType::INCREMENTAL: {
+      // to be add
+      break;
+    }
+    case PidParams::PidType::POSITION: {
+      return CalculatePositionSpeedPid(target, current, pid);
+    }
+    default:
+      break;
+  }
 }
 
-const float BikePid::CalculateBikeXxuanSpeedPid(float target,
-                                                float current) const {
-  speed_pid_ptr_->current_ = current;
-  speed_pid_ptr_->target_ = target;
-  speed_pid_ptr_->error_ = speed_pid_ptr_->target_ - speed_pid_ptr_->current_;
-  speed_pid_ptr_->error_integral_ += speed_pid_ptr_->error_;
+const float BikePid::CalculatePositionSpeedPid(
+    float target, float current, std::shared_ptr<PidParams> pid) const {
+  pid->current_ = current;
+  pid->target_ = target;
+  pid->error_ = pid->target_ - pid->current_;
+  pid->error_integral_ += pid->error_;
 
-  double p_out = speed_pid_ptr_->kp_ * speed_pid_ptr_->error_;
-  double i_out = speed_pid_ptr_->ki_ * speed_pid_ptr_->error_integral_;
-  double d_out = speed_pid_ptr_->kd_ *
-                 (speed_pid_ptr_->error_ - speed_pid_ptr_->last_error_);
+  double p_out = pid->kp_ * pid->error_;
+  double i_out = pid->ki_ * pid->error_integral_;
+  double d_out = pid->kd_ * (pid->error_ - pid->last_error_);
 
-  speed_pid_ptr_->output_ = p_out + i_out + d_out;
-  speed_pid_ptr_->last_error_ = speed_pid_ptr_->error_;
+  pid->output_ = p_out + i_out + d_out;
+  pid->last_error_ = pid->error_;
 
-  LOG_IF(WARNING, 0) << std::setprecision(4) << std::setiosflags(std::ios::fixed)
-                     << setiosflags(std::ios::showpos)
-                     << "Pid.Kp: " << speed_pid_ptr_->kp_
-                     << "\tPid.Ki: " << speed_pid_ptr_->ki_
-                     << "\tPid.Kd: " << speed_pid_ptr_->kd_
-                     << "\tPid.error: " << speed_pid_ptr_->error_
-                     << "\tPid.Kd: " << speed_pid_ptr_->kd_
-                     << "\tPid.Output: " << speed_pid_ptr_->output_;
+  LOG_IF(WARNING, 0) << std::setprecision(4)
+                     << std::setiosflags(std::ios::fixed)
+                     << setiosflags(std::ios::showpos) << "Pid.Kp: " << pid->kp_
+                     << "\tPid.Ki: " << pid->ki_ << "\tPid.Kd: " << pid->kd_
+                     << "\tPid.error: " << pid->error_
+                     << "\tPid.Kd: " << pid->kd_
+                     << "\tPid.Output: " << pid->output_;
 
-  return speed_pid_ptr_->output_;
+  return pid->output_;
 }
