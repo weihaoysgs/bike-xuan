@@ -4,4 +4,7 @@ Pid.Name: bike_speed_pid
 Kp: 1.0
 Ki: 0.0
 Kd: 0.0
+Integal.Limit: 0.0
+Use.Integal.Limit: true
 Output.Limit: 0.0
+Use.Output.Limit: true
