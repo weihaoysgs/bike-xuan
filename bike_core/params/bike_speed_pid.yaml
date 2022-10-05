@@ -2,6 +2,6 @@
 ---
 Pid.Name: bike_speed_pid
 Kp: 1.0
-Ki: 1.0
-Kd: 1.0
-Output.Limit: 20.0
+Ki: 0.0
+Kd: 0.0
+Output.Limit: 0.0
