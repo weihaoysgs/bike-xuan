@@ -2,6 +2,8 @@
 #define BIKE_PID_HPP
 
 #include <glog/logging.h>
+#include <ros/ros.h>
+#include <geometry_msgs/Vector3.h>
 
 #include <memory>
 #include <opencv2/opencv.hpp>
@@ -18,6 +20,9 @@ struct PidParams {
     file["Kd"] >> kd_;
     file["Pid.Name"] >> pid_name_;
     file["Output.Limit"] >> output_limit_;
+    file["Integal.Limit"] >> integral_limit_;
+    file["Use.Integal.Limit"] >> use_intgral_limit_;
+    file["Use.Output.Limit"] >> use_output_limit_;
     LOG(INFO) << pid_name_ << " param read complete!";
     LOG_IF(WARNING, 1) << "Kp: " << kp_ << "\tKi: " << ki_ << "\tKd: " << kd_
                        << "\tPid.Name: " << pid_name_
@@ -31,7 +36,9 @@ struct PidParams {
   double target_{0.0}, current_{0.0};
   double output_{0.0};
   double pid_error_integral_limit_{0.0};
-  double output_limit_{0.0};
+  double output_limit_{0.0}, integral_limit_{0.0};
+  bool use_intgral_limit_{false};
+  bool use_output_limit_{true};
 };
 
 class BikePid {
@@ -40,9 +47,9 @@ class BikePid {
   ~BikePid() = default;
   float operator()(const float target, const float current,
                    const PidParams::PidType PID_TYPE,
-                   std::shared_ptr<PidParams> pid) const;
+                   std::shared_ptr<PidParams> pid, bool debug) const;
   const float CalculatePositionSpeedPid(float target, float current,
-                                        std::shared_ptr<PidParams> pid) const;
+                                        std::shared_ptr<PidParams> pid, bool debug) const;
   std::shared_ptr<PidParams> getAngleVelocityPid() const {
     return angle_vel_pid_ptr_;
   };
@@ -56,6 +63,8 @@ class BikePid {
   }
 
  private:
+  ros::NodeHandle nh_;
+  ros::Publisher pub_pid_target_current_;
   std::shared_ptr<PidParams> angle_pid_ptr_;
   std::shared_ptr<PidParams> angle_vel_pid_ptr_;
   std::shared_ptr<PidParams> speed_pid_ptr_;

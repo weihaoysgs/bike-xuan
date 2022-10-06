@@ -7,6 +7,7 @@
 #include "bike_core/odrive_motor_feedback_msg.h"
 #include "bike_core/remote_control_msg.h"
 #include "bike_core/BikePid.hpp"
+#include "bike_core/pid_params_msg.h"
 
 struct ImuPose {
   ImuPose() : yaw_(0.0), roll_(0.0), pitch_(0.0){};
@@ -27,6 +28,9 @@ class BikeXuanControl {
       [this](tf2Scalar radian) -> tf2Scalar { return radian * 180.0 / M_PI; };
 
  private:
+
+  void SubPidParamsMessageCB(const bike_core::pid_params_msg::ConstPtr &msg);
+
   void SubOdriveCanSourceMessageCB(
       const bike_core::odrive_can_msg::ConstPtr &msg) {
     *odrive_src_can_msg_ptr_.get() = *msg;
@@ -75,12 +79,14 @@ class BikeXuanControl {
   // void timerthreadBikeCoreControl(const ros::TimerEvent &event);
   void tBikeCoreControl();
   void tBalance();
+  void tUpdate();
   void timerBalance(const ros::TimerEvent &event);
 
  private:
   ros::NodeHandle nh_;
   ros::Subscriber sub_imu_ch100_msg_, sub_momentum_wheel_parsed_msg_;
   ros::Subscriber sub_remote_ctrl_msg_, sub_can_src_msg_;
+  ros::Subscriber sub_pid_params_;
   ros::Timer bike_core_control_timer_;
   ros::Timer bike_balance_timer_;
   std::shared_ptr<bike_core::remote_control_msg> rc_ctrl_msg_ptr_;

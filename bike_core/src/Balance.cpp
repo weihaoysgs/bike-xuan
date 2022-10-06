@@ -9,9 +9,11 @@
 
 extern float target_speed_;
 extern float current_speed;
+extern float gyro_x_speed;
+extern float roll_angle;
 
 // 零点
-float Pitch_Zero = -2;    // 设置Pitch轴角度零点的误差值
+float Pitch_Zero = 6.8;    // 设置Pitch轴角度零点的误差值
 float Zero_error = 0.0;   // Pitch校准后的值
 float Pitch_error = 0.0;  // 实际-压弯
 float angle_error = 0.0;  // 压弯角度
@@ -54,13 +56,13 @@ float Speed_out, Angle_out;
 
 // 无刷参数  8.4
 // 角速度环参数
-PID Ang_Vel_PID;
+PID Ang_Vel_PID(0.0,0,0);
 // 角度环
-PID Angle_PID;
+PID Angle_PID(0.0,0,0);
 // 速度环
-PID MOTOR_PID;
+PID MOTOR_PID(0,0,0);
 
-PID Speed_PID;
+PID Speed_PID(0,0,0);
 
 int sloap(int target, int add)  // 斜坡函数
 {
@@ -201,21 +203,17 @@ void Integral_clear(void)
 void Balance_endocyclic()  // 角速度最内环2ms中断
 {
   static short gyro_last;
-  /*
-      修改
-      LQ_DMP_Read();  //陀螺仪读取
-  */
-  Zero_error = Pitch - Pitch_Zero;
-  gyro = gyro * 0.8 + gyro_last * 0.2;
-  gyro_last = gyro;
+  Zero_error = roll_angle - Pitch_Zero;
+  gyro_x_speed = gyro_x_speed * 0.8 + gyro_last * 0.2;
+  gyro_last = gyro_x_speed;
 
-  MotorDutyA = LocP_DCalc(&Ang_Vel_PID, (-gyro * 0.08), Tar_Ang_Vel_Y, 2000, -2000, 70, -70);  // 角速度环输出PWM控制电机
-  MotorDutyA = range_protect(MotorDutyA, -8000, 8000);                                         // PWM输出限幅
+  MotorDutyA = LocP_DCalc(&Ang_Vel_PID, (-gyro_x_speed), Tar_Ang_Vel_Y, 7, -7, 1, -1);  // 角速度环输出PWM控制电机
+  MotorDutyA = range_protect(MotorDutyA, -90, 90);                                         // PWM输出限幅
   //    if(MotorDutyA<-0) MotorDutyA -=100;    //死区（暂时不用，没必要用，要用的话自己测一下死区占空比）
   //    else if(MotorDutyA>0) MotorDutyA+=100; //死区
   //    if((MotorDutyA<100)&&(MotorDutyA>-100))
   //    MotorDutyA=0;
-  if (((Zero_error) > 20) || ((Zero_error) < -20))  //摔倒停车判断
+  if (((Zero_error) > 16) || ((Zero_error) < -16))  //摔倒停车判断
   {
     start_speed = 0;
     start_pid = 0;
@@ -246,7 +244,7 @@ void Balance_outcyclic()  // 角度内环10ms
   else
     MotorDutyB = 0;
   MotorDutyB = range_protect(MotorDutyB, -3000, 3000);
-  /*
+  /*m
     修改
     Motor(MotorDutyB); // 后轮电机输出
   */
@@ -267,12 +265,19 @@ void Balance_outcyclic()  // 角度内环10ms
   Pitch_error = Zero_error - angle_error;
 
   Angle_out = LocP_DCalc(&Angle_PID, Pitch_error, Target_Angle_Y, 100, -100, 20, -20);  // 角度环输出目标角速度
-  Tar_Ang_Vel_Y = range_protect(Angle_out, -300, 300);                                  // 目标角速度限幅
+  Tar_Ang_Vel_Y = range_protect(Angle_out, -1, 1);                                  // 目标角速度限幅
 }
 void Speed_control()  // 速度外环100ms
 {
   ECPULSE1 = current_speed;  // 动量轮编码器反馈
 
-  Speed_out = LocP_DCalc(&MOTOR_PID, -ECPULSE1, 3.0, 200, -200, 30, -30);  // 速度环输出目标角度
-  Target_Angle_Y = range_protect(Speed_out, -30, 30);                      // 目标角度限幅
+  Speed_out = LocP_DCalc(&MOTOR_PID, -ECPULSE1, 1.0, 200, -200, 30, -30);  // 速度环输出目标角度
+  Target_Angle_Y = range_protect(Speed_out, -10, 10);                      // 目标角度限幅
+  
+  LOG_IF(WARNING, 0) << std::setprecision(4) << std::setiosflags(std::ios::fixed) 
+                     << setiosflags(std::ios::showpos) <<
+                       "current_speed: " << current_speed << 
+                        "\tgyro_x_speed:" << gyro_x_speed << 
+                        "\tzero_error:" << Zero_error << 
+                        "\ttarget_speed_: " << target_speed_;
 }

@@ -79,7 +79,13 @@ root@socfpga:/sys/class/net/can0# cat tx_queue_len
 - https://blog.csdn.net/gjy_skyblue/article/details/115412902 （速度模式配置）
 - https://blog.csdn.net/gjy_skyblue/article/details/115134590  (电流环配置)
 
+float angle_pid_out =
+        bike_pid(balance_roll_angle, radian2angle(imu_ch100_pose_ptr_->roll_),
+                 PidParams::POSITION, bike_pid.getAnglePid(), false);
 
+    float angle_vel_pid_out =
+        bike_pid(angle_pid_out, gyro_msg.x, PidParams::POSITION,
+                 bike_pid.getAngleVelocityPid(), true);
 
 
 
