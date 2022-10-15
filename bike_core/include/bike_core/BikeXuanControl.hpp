@@ -86,7 +86,6 @@ class BikeXuanControl {
   ros::NodeHandle nh_;
   ros::Subscriber sub_imu_ch100_msg_, sub_momentum_wheel_parsed_msg_;
   ros::Subscriber sub_remote_ctrl_msg_, sub_can_src_msg_;
-  ros::Subscriber sub_pid_params_;
   ros::Timer bike_core_control_timer_;
   ros::Timer bike_balance_timer_;
   std::shared_ptr<bike_core::remote_control_msg> rc_ctrl_msg_ptr_;

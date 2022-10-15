@@ -15,9 +15,6 @@ BikeXuanControl::BikeXuanControl() : nh_("~") {
   odrive_can_parsed_msg_ptr_ =
       std::make_shared<bike_core::odrive_motor_feedback_msg>();
 
-  sub_pid_params_ = nh_.subscribe<bike_core::pid_params_msg>(
-      "pid_debug_params", 100, &BikeXuanControl::SubPidParamsMessageCB, this);
-
   sub_can_src_msg_ = nh_.subscribe<bike_core::odrive_can_msg>(
       "topic1", 100, &BikeXuanControl::SubOdriveCanSourceMessageCB, this);
   sub_remote_ctrl_msg_ = nh_.subscribe<bike_core::remote_control_msg>(
