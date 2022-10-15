@@ -71,9 +71,12 @@ const float BikePid::CalculatePositionSpeedPid(float target, float current,
                          << "\tPid.error: " << pid->error_
                          << "\tPid.Integral: " << pid->error_integral_
                          << "\tPid.Output: " << pid->output_;
-  geometry_msgs::Vector3 pid_debug;
-  pid_debug.x = pid->current_;
-  pid_debug.y = pid_debug.z = pid->output_;
-  pub_pid_target_current_.publish(pid_debug);
+  if (debug)
+  {
+    geometry_msgs::Vector3 pid_debug;
+    pid_debug.x = target;
+    pid_debug.y = current;
+    pub_pid_target_current_.publish(pid_debug);
+  }
   return pid->output_;
 }
