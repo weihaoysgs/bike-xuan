@@ -102,11 +102,9 @@ void BikeXuanControl::tBikeCoreControl() {
   geometry_msgs::Vector3 &gyro_msg = bike_xuan_imu_msg_ptr_->angular_velocity;
   ros::Rate rate(control_rate);
 
-  // radian2angle(imu_ch100_pose_ptr_->roll_)
-  // gyro_msg.x
-
   constexpr double balance_roll_angle = 6.8;
-  ros::Publisher pub_debug_plot = nh_.advertise<geometry_msgs::Vector3>("debug_plot", 1, this);
+  ros::Publisher pub_debug_plot =
+      nh_.advertise<geometry_msgs::Vector3>("debug_plot", 1, this);
   geometry_msgs::Vector3 debug_plot_msg;
   BikePid bike_pid;
 
