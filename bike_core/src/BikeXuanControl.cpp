@@ -88,49 +88,6 @@ void BikeXuanControl::timerBalance(const ros::TimerEvent &event) {
     t_ms = 0;
   }
 }
-extern PID Ang_Vel_PID;
-extern PID Angle_PID;
-extern PID MOTOR_PID;
-extern PID Speed_PID;
-
-void BikeXuanControl::SubPidParamsMessageCB(
-    const bike_core::pid_params_msg::ConstPtr &msg) {
-  if (msg->header.frame_id == "Angle.Vel.Pid")
-  {
-    Ang_Vel_PID.Kp = msg->p;
-    Ang_Vel_PID.Ki = msg->i;
-    Ang_Vel_PID.Kd = msg->d;
-    LOG(INFO) << "Angle.Vel.Pid";
-  }
-  if (msg->header.frame_id == "Angle.Pid")
-  {
-    Angle_PID.Kp = msg->p;
-    Angle_PID.Ki = msg->i;
-    Angle_PID.Kd = msg->d;
-    LOG(INFO) << "Angle.Pid";
-  }
-  if (msg->header.frame_id == "Motor.Pid")
-  {
-    MOTOR_PID.Kp = msg->p;
-    MOTOR_PID.Ki = msg->i;
-    MOTOR_PID.Kd = msg->d;
-    LOG(INFO) << "Motor.Pid";
-  }
-  if (msg->header.frame_id == "Speed.Pid")
-  {
-    Speed_PID.Kp = msg->p;
-    Speed_PID.Ki = msg->i;
-    Speed_PID.Kd = msg->d;
-    LOG(INFO) << "Speed.Pid";
-  }
-      
-  LOG(INFO) << "msg.p: " << msg->p 
-            << "\tmsg.i: " << msg->i
-            << "\tmsg.d: " << msg->d;
-  LOG(INFO) << "p: " << Ang_Vel_PID.Kp 
-            << "\ti: " << Ang_Vel_PID.Ki
-            << "\td: " << Ang_Vel_PID.Kd;
-}
 
 void BikeXuanControl::tBikeCoreControl() {
   const std::string can_port_name = "can0";
