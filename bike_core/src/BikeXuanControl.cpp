@@ -101,7 +101,15 @@ void BikeXuanControl::tBikeCoreControl() {
   constexpr double balance_roll_angle = 6.8;
   ros::Publisher pub_debug_plot =
       nh_.advertise<geometry_msgs::Vector3>("debug_plot", 1, this);
-  geometry_msgs::Vector3 debug_plot_msg;
+
+  auto publish_debug_pid_plot_msg = [this, pub_debug_plot](float target,
+                                                           float current) {
+    geometry_msgs::Vector3 msg;
+    msg.x = target;
+    msg.y = current;
+    pub_debug_plot.publish(msg);
+  };
+
   BikePid bike_pid;
 
   while (ros::ok()) {
