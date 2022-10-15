@@ -82,6 +82,10 @@ class BikeXuanControl {
   void tUpdate();
   void timerBalance(const ros::TimerEvent &event);
 
+private:
+  float current_speed_;
+  float gyro_x_speed_;
+  float roll_angle_;
  private:
   ros::NodeHandle nh_;
   ros::Subscriber sub_imu_ch100_msg_, sub_momentum_wheel_parsed_msg_;

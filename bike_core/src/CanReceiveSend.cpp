@@ -155,10 +155,12 @@ int CanSendReceive::WriteDataToSocketCanDeviceControlMotor(
   frame.data[1] = 0x00;
   frame.data[2] = 0x00;
   frame.data[3] = 0x00;
-  frame.data[4] = int_speed >> 8;
-  frame.data[5] = int_speed;
-  frame.data[6] = 0x00;
-  frame.data[7] = 0x00;
+  // frame.data[4] = int_speed >> 8;
+  // frame.data[5] = int_speed;
+  frame.data[4] = 0x00;
+  frame.data[5] = 0x00;
+  frame.data[6] = int_speed;
+  frame.data[7] = int_speed >> 8;
 
   int n = write(socket_can_fd, &frame, sizeof(frame));
   LOG_IF(ERROR, n == -1) << "Send Error";

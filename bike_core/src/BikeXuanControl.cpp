@@ -4,8 +4,7 @@ float current_speed;
 
 float gyro_x_speed;
 float roll_angle;
-extern int start_pid;  // 动量轮开启标志位
-extern float Tar_Ang_Vel_Y;
+
 
 BikeXuanControl::BikeXuanControl() : nh_("~") {
   rc_ctrl_msg_ptr_ = std::make_shared<bike_core::remote_control_msg>();
@@ -44,9 +43,9 @@ BikeXuanControl::BikeXuanControl() : nh_("~") {
 
 void BikeXuanControl::tUpdate() {
   while (ros::ok()) {
-    gyro_x_speed = bike_xuan_imu_msg_ptr_->angular_velocity.x;
-    roll_angle = radian2angle(imu_ch100_pose_ptr_->roll_);
-    current_speed = odrive_can_parsed_msg_ptr_->speed;
+    gyro_x_speed_ = bike_xuan_imu_msg_ptr_->angular_velocity.x;
+    roll_angle_ = radian2angle(imu_ch100_pose_ptr_->roll_);
+    current_speed_ = odrive_can_parsed_msg_ptr_->speed;
   }
 }
 
@@ -55,18 +54,18 @@ void BikeXuanControl::tBalance() {
   ros::Rate rate(10);  // hz
   while (ros::ok()) {
     if (start_pid == 1) {
-      if (t_2ms == 1) {
-        Balance_endocyclic();
-        t_2ms = 0;
-      }
-      if (t_10ms == 1) {
-        Balance_outcyclic();
-        t_10ms = 0;
-      }
-      if (t_100ms == 1) {
-        Speed_control();
-        t_100ms = 0;
-      }
+    if (t_2ms == 1) {
+      Balance_endocyclic();
+      t_2ms = 0;
+    }
+    if (t_10ms == 1) {
+      Balance_outcyclic();
+      t_10ms = 0;
+    }
+    if (t_100ms == 1) {
+      Speed_control();
+      t_100ms = 0;
+    }
     } else {
       target_speed_ = 0;
       Integral_clear();
