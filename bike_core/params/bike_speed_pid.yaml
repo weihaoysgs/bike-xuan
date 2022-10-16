@@ -1,10 +1,10 @@
 %YAML:1.0
 ---
 Pid.Name: bike_speed_pid
-Kp: 1.0
+Kp: 100.0
 Ki: 0.0
 Kd: 0.0
 Integal.Limit: 0.0
 Use.Integal.Limit: true
-Output.Limit: 0.0
+Output.Limit: 1000.0
 Use.Output.Limit: true
