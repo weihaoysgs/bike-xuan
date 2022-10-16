@@ -53,7 +53,6 @@ int t_ms, t_2ms, t_10ms, t_100ms;
 void BikeXuanControl::tBalance() {
   ros::Rate rate(10);  // hz
   while (ros::ok()) {
-    if (start_pid == 1) {
     if (t_2ms == 1) {
       Balance_endocyclic();
       t_2ms = 0;
@@ -66,12 +65,6 @@ void BikeXuanControl::tBalance() {
       Speed_control();
       t_100ms = 0;
     }
-    } else {
-      target_speed_ = 0;
-      Integral_clear();
-    }
-
-    // rate.sleep();
   }
 }
 
