@@ -13,3 +13,13 @@
 - 小米轮毂电机速度环配置
 
   https://blog.csdn.net/abf1234444/article/details/111473004
+
+
+
+
+
+相关报错解释
+
+- `MotorError.CONTROL_DEADLINE_MISSED`
+
+  https://discourse.odriverobotics.com/t/error-control-deadline-missed/3662/5
