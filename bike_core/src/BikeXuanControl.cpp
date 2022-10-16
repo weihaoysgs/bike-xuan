@@ -1,16 +1,19 @@
 #include "bike_core/BikeXuanControl.hpp"
 float target_speed_;
 float current_speed;
-
 float gyro_x_speed;
 float roll_angle;
 
-
 BikeXuanControl::BikeXuanControl() : nh_("~") {
+  const std::string can_port_name = "can0";
+  socket_can_fd_ = CanSendReceive::GetOneSocketCanSendInstance(can_port_name.c_str());
+  LOG_IF(FATAL, !socket_can_fd_) << "Get Socket Can Instance Erros!";
+
   rc_ctrl_msg_ptr_ = std::make_shared<bike_core::remote_control_msg>();
   odrive_src_can_msg_ptr_ = std::make_shared<bike_core::odrive_can_msg>();
   bike_xuan_imu_msg_ptr_ = std::make_shared<sensor_msgs::Imu>();
   imu_ch100_pose_ptr_ = std::make_shared<ImuPose>();
+  bike_pid_ptr_ = std::make_shared<BikePid>();
   odrive_can_parsed_msg_ptr_ =
       std::make_shared<bike_core::odrive_motor_feedback_msg>();
 
@@ -43,9 +46,9 @@ BikeXuanControl::BikeXuanControl() : nh_("~") {
 
 void BikeXuanControl::tUpdate() {
   while (ros::ok()) {
-    gyro_x_speed_ = bike_xuan_imu_msg_ptr_->angular_velocity.x;
+    gyro_x_speed_ = bike_xuan_imu_msg_ptr_->angular_velocity.x * 100.0;
     roll_angle_ = radian2angle(imu_ch100_pose_ptr_->roll_);
-    current_speed_ = odrive_can_parsed_msg_ptr_->speed;
+    current_speed_ = odrive_can_parsed_msg_ptr_->speed * 10.0;
   }
 }
 
@@ -53,28 +56,28 @@ int t_ms, t_2ms, t_10ms, t_100ms;
 void BikeXuanControl::tBalance() {
   ros::Rate rate(10);  // hz
   while (ros::ok()) {
-    if (t_2ms == 1) {
-      Balance_endocyclic();
-      t_2ms = 0;
+    if (t_2ms_ == 1) {
+      AngleVelocityPidControl();
+      t_2ms_ = 0;
     }
-    if (t_10ms == 1) {
-      Balance_outcyclic();
-      t_10ms = 0;
+    if (t_10ms_ == 1) {
+      AnglePidControl();
+      t_10ms_ = 0;
     }
-    if (t_100ms == 1) {
-      Speed_control();
-      t_100ms = 0;
+    if (t_100ms_ == 1) {
+      SpeedPidControl();
+      t_100ms_ = 0;
     }
   }
 }
 
 void BikeXuanControl::timerBalance(const ros::TimerEvent &event) {
-  t_ms++;
-  if (t_ms % 2 == 0) t_2ms = 1;
-  if (t_ms % 10 == 0) t_10ms = 1;
-  if (t_ms % 100 == 0) {
-    t_100ms = 1;
-    t_ms = 0;
+  t_ms_++;
+  if (t_ms_ % 2 == 0) t_2ms_ = 1;
+  if (t_ms_ % 10 == 0) t_10ms_ = 1;
+  if (t_ms_ % 100 == 0) {
+    t_100ms_ = 1;
+    t_ms_ = 0;
   }
 }
 
