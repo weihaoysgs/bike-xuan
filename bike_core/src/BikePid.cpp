@@ -66,11 +66,13 @@ const float BikePid::CalculatePositionSpeedPid(float target, float current,
                          << std::setiosflags(std::ios::fixed)
                          << setiosflags(std::ios::showpos)
                          << "Pid.Kp: " << pid->kp_ << "\tPid.Ki: " << pid->ki_
-                         << "\tPid.Kd: " << pid->kd_
+                         << "\tPid.Kd: " /* << pid->kd_
                          << "\tPid.Use.Output.Limit: " << pid->use_output_limit_
                          << "\tPid.error: " << pid->error_
-                         << "\tPid.Integral: " << pid->error_integral_
-                         << "\tPid.Output: " << pid->output_;
+                         << "\tPid.Integral: " << pid->error_integral_ */
+                         << "\tPid.Output: " << pid->output_
+                         << "\tPid.Current: " << pid->current_
+                         << "\tPid.Target: " << pid->target_;
   if (debug)
   {
     geometry_msgs::Vector3 pid_debug;
