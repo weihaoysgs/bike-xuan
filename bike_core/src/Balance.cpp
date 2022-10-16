@@ -208,7 +208,7 @@ void Balance_endocyclic()  // 角速度最内环2ms中断
   gyro_last = gyro_x_speed;
 
   MotorDutyA = LocP_DCalc(&Ang_Vel_PID, (-gyro_x_speed), Tar_Ang_Vel_Y, 7, -7, 1, -1);  // 角速度环输出PWM控制电机
-  MotorDutyA = range_protect(MotorDutyA, -90, 90);                                         // PWM输出限幅
+  MotorDutyA = range_protect(MotorDutyA, -3000, 3000);                                         // PWM输出限幅
   //    if(MotorDutyA<-0) MotorDutyA -=100;    //死区（暂时不用，没必要用，要用的话自己测一下死区占空比）
   //    else if(MotorDutyA>0) MotorDutyA+=100; //死区
   //    if((MotorDutyA<100)&&(MotorDutyA>-100))
@@ -278,6 +278,5 @@ void Speed_control()  // 速度外环100ms
                      << setiosflags(std::ios::showpos) <<
                        "current_speed: " << current_speed << 
                         "\tgyro_x_speed:" << gyro_x_speed << 
-                        "\tzero_error:" << Zero_error << 
-                        "\ttarget_speed_: " << target_speed_;
+                        "\tzero_error:" << Zero_error ;
 }
