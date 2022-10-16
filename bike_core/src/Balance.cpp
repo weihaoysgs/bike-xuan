@@ -140,12 +140,12 @@ float IncP_DCalc(PID* sptr, float s, float target)
 }
 
 // 位置式pid
-float LocP_DCalc(PID* sptr, float s, float target, float imax, float imin, float limit_max, float limit_min)
+float LocP_DCalc(PID* sptr, float crr, float target, float imax, float imin, float limit_max, float limit_min)
 {
   float iError, dError;
   float output;
 
-  iError = s - target;  // 偏差
+  iError = crr - target;  // 偏差
 
   if (iError > limit_max && iError < limit_min)
     iError = iError * 0.1;
