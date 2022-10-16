@@ -56,17 +56,23 @@ int t_ms, t_2ms, t_10ms, t_100ms;
 void BikeXuanControl::tBalance() {
   ros::Rate rate(10);  // hz
   while (ros::ok()) {
-    if (t_2ms_ == 1) {
-      AngleVelocityPidControl();
-      t_2ms_ = 0;
+    if (rc_ctrl_msg_ptr_->s1 == 3) {
+      if (t_2ms_ == 1) {
+        AngleVelocityPidControl();
+        t_2ms_ = 0;
+      }
+      if (t_10ms_ == 1) {
+        AnglePidControl();
+        t_10ms_ = 0;
+      }
+      if (t_100ms_ == 1) {
+        SpeedPidControl();
+        t_100ms_ = 0;
+      }
     }
-    if (t_10ms_ == 1) {
-      AnglePidControl();
-      t_10ms_ = 0;
-    }
-    if (t_100ms_ == 1) {
-      SpeedPidControl();
-      t_100ms_ = 0;
+    else
+    {
+      // send motor speed [0];
     }
   }
 }
