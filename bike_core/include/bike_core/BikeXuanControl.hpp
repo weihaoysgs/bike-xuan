@@ -20,9 +20,11 @@ struct ImuPose {
 class BikeXuanControl {
  public:
   BikeXuanControl();
-  ~BikeXuanControl() = default;
+  ~BikeXuanControl() { if (socket_can_fd_) close(socket_can_fd_); };
   const bool ChechSubscriberMessageTimestamp() const;
-
+  void AngleVelocityPidControl();
+  void AnglePidControl();
+  void SpeedPidControl();
  public:
   std::function<tf2Scalar(tf2Scalar)> radian2angle =
       [this](tf2Scalar radian) -> tf2Scalar { return radian * 180.0 / M_PI; };
@@ -54,6 +56,11 @@ class BikeXuanControl {
                        << " Can ID: " << odrive_can_parsed_msg_ptr_->can_id;
   };
   void SubIMUCH100MessageCallback(const sensor_msgs::Imu::ConstPtr &msg) {
+    if (first_imu_msg_rece_)
+    {
+      first_imu_msg_rece_ = false;
+      gyro_x_speed_ = last_gyro_speed_ = msg->angular_velocity.x;
+    }
     *bike_xuan_imu_msg_ptr_.get() = *msg;
     geometry_msgs::Quaternion_<std::allocator<void>> qtn_ =
         msg.get()->orientation;
@@ -86,6 +93,14 @@ private:
   float current_speed_;
   float gyro_x_speed_;
   float roll_angle_;
+  int t_ms_{0}, t_2ms_{0}, t_10ms_{0}, t_100ms_{0};
+  int socket_can_fd_; 
+  bool first_imu_msg_rece_{true};
+  float last_gyro_speed_{0.0};
+private:
+  float angle_vel_pid_out_{0.0};
+  float angle_pid_out_{0.0};
+  float speed_pid_out_{0.0};
  private:
   ros::NodeHandle nh_;
   ros::Subscriber sub_imu_ch100_msg_, sub_momentum_wheel_parsed_msg_;
@@ -96,6 +111,7 @@ private:
   std::shared_ptr<bike_core::odrive_can_msg> odrive_src_can_msg_ptr_;
   std::shared_ptr<sensor_msgs::Imu> bike_xuan_imu_msg_ptr_;
   std::shared_ptr<ImuPose> imu_ch100_pose_ptr_;
+  std::shared_ptr<BikePid> bike_pid_ptr_;
   std::shared_ptr<bike_core::odrive_motor_feedback_msg>
       odrive_can_parsed_msg_ptr_;
 };
