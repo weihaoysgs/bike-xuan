@@ -2,8 +2,8 @@
 ---
 Pid.Name: bike_speed_pid
 Kp: 100.0
-Ki: 0.0
-Kd: 0.0
+Ki: 0.05
+Kd: 0.1
 Integal.Limit: 0.0
 Use.Integal.Limit: true
 Output.Limit: 1000.0
