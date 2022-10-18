@@ -79,7 +79,7 @@ void BikeXuanControl::tBalance() {
 }
 
 void BikeXuanControl::timerBalance(const ros::TimerEvent &event) {
-   t_ms_++;
+  t_ms_++;
   if (t_ms_ % 2 == 0) t_2ms_ = 1;
   if (t_ms_ % 10 == 0) t_10ms_ = 1;
   if (t_ms_ % 100 == 0) {
