@@ -6,7 +6,8 @@ float roll_angle;
 
 BikeXuanControl::BikeXuanControl() : nh_("~") {
   const std::string can_port_name = "can0";
-  socket_can_fd_ = CanSendReceive::GetOneSocketCanSendInstance(can_port_name.c_str());
+  socket_can_fd_ =
+      CanSendReceive::GetOneSocketCanSendInstance(can_port_name.c_str());
   LOG_IF(FATAL, !socket_can_fd_) << "Get Socket Can Instance Erros!";
 
   rc_ctrl_msg_ptr_ = std::make_shared<bike_core::remote_control_msg>();
