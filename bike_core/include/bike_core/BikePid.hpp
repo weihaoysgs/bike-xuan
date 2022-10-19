@@ -23,6 +23,8 @@ struct PidParams {
     file["Integal.Limit"] >> integral_limit_;
     file["Use.Integal.Limit"] >> use_intgral_limit_;
     file["Use.Output.Limit"] >> use_output_limit_;
+    file["CalculateTime"] >> calculate_time_;
+    file["Debug"] >> debug_; 
     LOG(INFO) << pid_name_ << " param read complete!";
     LOG_IF(WARNING, 1) << "Kp: " << kp_ << "\tKi: " << ki_ << "\tKd: " << kd_
                        << "\tPid.Name: " << pid_name_
@@ -39,6 +41,8 @@ struct PidParams {
   double output_limit_{0.0}, integral_limit_{0.0};
   bool use_intgral_limit_{false};
   bool use_output_limit_{true};
+  int calculate_time_{10};
+  bool debug_{false};
 };
 
 class BikePid {
