@@ -70,7 +70,7 @@ const float BikePid::CalculatePositionSpeedPid(float target, float current,
                          << "\tPid.Use.Output.Limit: " << pid->use_output_limit_
                          << "\tPid.error: " << pid->error_
                          << "\tPid.Integral: " << pid->error_integral_ */
-                         << "\tPid.Error: " << pid->error_
+                         << "\tPid.Name: " << pid->pid_name_
                          << "\tPid.Output: " << pid->output_
                          << "\tPid.Current: " << pid->current_
                          << "\tPid.Target: " << pid->target_;
