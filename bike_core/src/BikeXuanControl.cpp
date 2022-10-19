@@ -82,7 +82,7 @@ void BikeXuanControl::AngleVelocityPidControl() {
  */
 void BikeXuanControl::AnglePidControl() {
   // the param should get in the system init
-  constexpr float roll_balance_angle_ = -1.59;
+  constexpr float roll_balance_angle_ = 3.6;
   // 角度环的输出是速度环的输入，角度环的输出目前大概在 [-8,8] 左右
   // 输入大概在 [-3,3] 左右，调试时的输入为 IMU 原始输入
   angle_pid_out_ = (*bike_pid_ptr_)(
