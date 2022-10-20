@@ -106,6 +106,17 @@ target_link_libraries(bike_pid_test_node
   glog
 )
 
+# ServoControl test node
+add_executable(servo_control_test_node
+test/servo_control_test_node.cpp
+src/ServoControl.cpp
+)
+target_link_libraries(servo_control_test_node
+  ${catkin_LIBRARIES}
+  ${OpenCV_LIBRARIES}
+  glog
+)
+
 
 # odrive can 数据接受以及解析节点
 add_executable(can_send_receive_node
@@ -124,6 +135,7 @@ src/CanReceiveSend.cpp
 src/BikeXuanControl.cpp
 src/RemoteControlParser.cpp
 src/BikePid.cpp
+src/ServoControl.cpp
 ${parser_remote_data_node_header_SRC}
 )
 target_link_libraries(bike_xuan_core_control_node
