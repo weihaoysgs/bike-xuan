@@ -1,9 +1,9 @@
 %YAML:1.0
 ---
 Pid.Name: bike_angle_velocity_pid
-Kp: 250.0
-Ki: 0.1
-Kd: -50.0
+Kp: 410.0
+Ki: 0.21
+Kd: -92.1
 CalculateTime: 30
 Debug: 0
 Integal.Limit: 200.0
