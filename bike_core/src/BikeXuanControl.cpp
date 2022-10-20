@@ -104,15 +104,15 @@ void BikeXuanControl::tBalance() {
   ros::Rate rate(10);  // hz
   while (ros::ok()) {
     if (cal_angle_vel_pid_ == 1) {
-      AngleVelocityPidControl();
+      // AngleVelocityPidControl();
       cal_angle_vel_pid_ = 0;
     }
     if (cal_angle_pid_ == 1) {
-      AnglePidControl();
+      // AnglePidControl();
       cal_angle_pid_ = 0;
     }
     if (cal_speed_pid_ == 1) {
-      SpeedPidControl();
+      // SpeedPidControl();
       cal_speed_pid_ = 0;
     }
   }
@@ -146,7 +146,6 @@ void BikeXuanControl::timerBalance(const ros::TimerEvent &event) {
 }
 
 void BikeXuanControl::tBikeCoreControl() {
-  /*
   const std::string can_port_name = "can0";
   const int socket_can_fd =
       CanSendReceive::GetOneSocketCanSendInstance(can_port_name.c_str());
@@ -154,7 +153,7 @@ void BikeXuanControl::tBikeCoreControl() {
   LOG_IF(FATAL, !socket_can_fd) << "Get Socket Can Instance Erros!";
 
   // TODO using yaml to save params
-  const double control_rate = 100;
+  const double control_rate = 1000;
   const double tolerance_msg_dt = 0.1;
   geometry_msgs::Vector3 &gyro_msg = bike_xuan_imu_msg_ptr_->angular_velocity;
   ros::Rate rate(control_rate);
@@ -173,22 +172,27 @@ void BikeXuanControl::tBikeCoreControl() {
 
     float target_remote_speed = rc_ctrl_msg_ptr_->ch_x[0] / 2.2;
 
-
-    const float balance_roll_anle = 2.01;
+    const float balance_roll_anle = 3.732;
     ////////////////////////////////////////////////////////////////////
-    // 测速范围在 +-300
+    
+    if (count % bike_pid.getSpeedPid()->calculate_time_ == 0) {
+      speed_pid_out_ =
+          bike_pid(0.0, current_speed_, PidParams::POSITION,
+                   bike_pid.getSpeedPid(), bike_pid.getSpeedPid()->debug_);
+    }
 
-    speed_pid_out_ = bike_pid(1.0, current_speed_, PidParams::POSITION,
-                              bike_pid.getSpeedPid(), 1);
+    if (count % bike_pid.getAnglePid()->calculate_time_ == 0) {
+      angle_pid_out_ = bike_pid(balance_roll_anle, roll_angle_ - speed_pid_out_,
+                                PidParams::POSITION, bike_pid.getAnglePid(),
+                                bike_pid.getAnglePid()->debug_);
+    }
 
-    // if (std::abs(roll_angle_ - balance_roll_anle) > 3.0) roll_angle_ = 2.17;
-
-    angle_pid_out_ = bike_pid(balance_roll_anle, roll_angle_ - speed_pid_out_,
-                              PidParams::POSITION, bike_pid.getAnglePid(), 0);
-    // 角速度环的输入限制在 [-10,10] 上
-    angle_vel_pid_out_ =
-        bike_pid(angle_pid_out_, gyro_x_speed_, PidParams::POSITION,
-                 bike_pid.getAngleVelocityPid(), 0);
+    if (count % bike_pid.getAngleVelocityPid()->calculate_time_ == 0) {
+      angle_vel_pid_out_ =
+          bike_pid(angle_pid_out_, gyro_x_speed_, PidParams::POSITION,
+                   bike_pid.getAngleVelocityPid(),
+                   bike_pid.getAngleVelocityPid()->debug_);
+    }
 
     ////////////////////////////////////////////////////////////////////
     int16_t int_speed = static_cast<int16_t>(angle_vel_pid_out_);
@@ -199,10 +203,8 @@ void BikeXuanControl::tBikeCoreControl() {
       CanSendReceive::WriteDataToSocketCanDeviceControlMotor(socket_can_fd, 524,
                                                              0);
 
-
     rate.sleep();
   }
-  */
 }
 
 const bool BikeXuanControl::ChechSubscriberMessageTimestamp() const {
