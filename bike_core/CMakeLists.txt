@@ -123,7 +123,6 @@ node/BikeXuanCoreControlNode.cpp
 src/CanReceiveSend.cpp
 src/BikeXuanControl.cpp
 src/RemoteControlParser.cpp
-src/Balance.cpp
 src/BikePid.cpp
 ${parser_remote_data_node_header_SRC}
 )

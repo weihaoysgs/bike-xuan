@@ -1,7 +1,6 @@
 #ifndef BIKEXUAN_CONTROL_HPP
 #define BIKEXUAN_CONTROL_HPP
 
-#include "bike_core/Balance.hpp"
 #include "bike_core/CanReceiveSend.hpp"
 #include "bike_core/odrive_can_msg.h"
 #include "bike_core/odrive_motor_feedback_msg.h"
