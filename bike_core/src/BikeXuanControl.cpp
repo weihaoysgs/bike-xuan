@@ -1,8 +1,4 @@
 #include "bike_core/BikeXuanControl.hpp"
-float target_speed_;
-float current_speed;
-float gyro_x_speed;
-float roll_angle;
 
 BikeXuanControl::BikeXuanControl() : nh_("~") {
   const std::string can_port_name = "can0";
