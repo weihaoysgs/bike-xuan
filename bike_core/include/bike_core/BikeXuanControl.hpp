@@ -7,6 +7,7 @@
 #include "bike_core/remote_control_msg.h"
 #include "bike_core/BikePid.hpp"
 #include "bike_core/pid_params_msg.h"
+#include "bike_core/OdriveMotorConfig.hpp"
 
 struct ImuPose {
   ImuPose() : yaw_(0.0), roll_(0.0), pitch_(0.0){};
@@ -49,10 +50,13 @@ class BikeXuanControl {
   };
   void SubOdriveMotorFeedbackParsedMessageCB(
       const bike_core::odrive_motor_feedback_msg::ConstPtr &msg) {
-    *odrive_can_parsed_msg_ptr_.get() = *msg;
-    LOG_IF(WARNING, 0) << "Speed: " << odrive_can_parsed_msg_ptr_->speed << " "
-                       << "Position: " << odrive_can_parsed_msg_ptr_->position
-                       << " Can ID: " << odrive_can_parsed_msg_ptr_->can_id;
+    if (msg->can_id == OdriveMotorConfig::getSigleInstance().axis0_send_receive_vel_position_can_id_)
+      *odrive_axis0_can_parsed_msg_ptr_.get() = *msg;
+    else if (msg->can_id == OdriveMotorConfig::getSigleInstance().axis1_send_receive_vel_position_can_id_)
+      *odrive_axis1_can_parsed_msg_ptr_.get() = *msg;
+    LOG_IF(WARNING, 0) << "Speed: " << msg->speed << " "
+                       << "Position: " << msg->position
+                       << " Can ID: " << msg->can_id;
   };
   void SubIMUCH100MessageCallback(const sensor_msgs::Imu::ConstPtr &msg) {
     if (first_imu_msg_rece_)
@@ -116,7 +120,7 @@ private:
   std::shared_ptr<ImuPose> imu_ch100_pose_ptr_;
   std::shared_ptr<BikePid> bike_pid_ptr_;
   std::shared_ptr<bike_core::odrive_motor_feedback_msg>
-      odrive_can_parsed_msg_ptr_;
+      odrive_axis0_can_parsed_msg_ptr_, odrive_axis1_can_parsed_msg_ptr_;
 };
 
 #endif  // BIKEXUAN_CONTROL_HPP

@@ -11,7 +11,9 @@ BikeXuanControl::BikeXuanControl() : nh_("~") {
   bike_xuan_imu_msg_ptr_ = std::make_shared<sensor_msgs::Imu>();
   imu_ch100_pose_ptr_ = std::make_shared<ImuPose>();
   bike_pid_ptr_ = std::make_shared<BikePid>();
-  odrive_can_parsed_msg_ptr_ =
+  odrive_axis0_can_parsed_msg_ptr_ =
+      std::make_shared<bike_core::odrive_motor_feedback_msg>();
+  odrive_axis1_can_parsed_msg_ptr_ =
       std::make_shared<bike_core::odrive_motor_feedback_msg>();
 
   sub_can_src_msg_ = nh_.subscribe<bike_core::odrive_can_msg>(
@@ -57,7 +59,7 @@ void BikeXuanControl::tUpdate() {
                     100.0;
     last_gyro_speed_ = bike_xuan_imu_msg_ptr_->angular_velocity.x;
     roll_angle_ = radian2angle(imu_ch100_pose_ptr_->roll_);
-    current_speed_ = odrive_can_parsed_msg_ptr_->speed * 10.0;
+    current_speed_ = odrive_axis0_can_parsed_msg_ptr_->speed * 10.0;
   }
 }
 
@@ -216,7 +218,7 @@ const bool BikeXuanControl::ChechSubscriberMessageTimestamp() const {
   double time_now = ros::Time::now().toSec();
   double remote_ctrl_data_time = rc_ctrl_msg_ptr_->header.stamp.toSec();
   double motor_parsed_data_time =
-      odrive_can_parsed_msg_ptr_->header.stamp.toSec();
+      odrive_axis0_can_parsed_msg_ptr_->header.stamp.toSec();
   LOG_IF(WARNING, 0) << "dt remote_ctrl_data_time: "
                      << std::abs(time_now - remote_ctrl_data_time)
                      << "  dt motor_parsed_data_time: "
