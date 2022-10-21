@@ -87,6 +87,7 @@ class BikeXuanControl {
   void tBalance();
   void tUpdate();
   void timerBalance(const ros::TimerEvent &event);
+  void timerDriverWheelControll(const ros::TimerEvent &event);
 
 private:
   float current_speed_;
@@ -108,6 +109,7 @@ private:
   ros::Subscriber sub_remote_ctrl_msg_, sub_can_src_msg_;
   ros::Timer bike_core_control_timer_;
   ros::Timer bike_balance_timer_;
+  ros::Timer bike_driver_wheel_control_timer_;
   std::shared_ptr<bike_core::remote_control_msg> rc_ctrl_msg_ptr_;
   std::shared_ptr<bike_core::odrive_can_msg> odrive_src_can_msg_ptr_;
   std::shared_ptr<sensor_msgs::Imu> bike_xuan_imu_msg_ptr_;
