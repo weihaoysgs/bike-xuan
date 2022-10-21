@@ -21,6 +21,7 @@
 
 #include "bike_core/odrive_can_msg.h"
 #include "bike_core/odrive_motor_feedback_msg.h"
+#include "bike_core/OdriveMotorConfig.hpp"
 
 class CanSendReceive {
  public:
