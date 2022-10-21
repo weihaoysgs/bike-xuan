@@ -203,7 +203,7 @@ void BikeXuanControl::tBikeCoreControl() {
 
     ////////////////////////////////////////////////////////////////////
     int16_t int_speed = static_cast<int16_t>(angle_vel_pid_out_);
-    if (rc_ctrl_msg_ptr_->s1 == 3)
+    if (rc_ctrl_msg_ptr_->s1 == 3 && OdriveMotorConfig::getSigleInstance().debug_run_momentum_wheel_)
       CanSendReceive::WriteDataToSocketCanDeviceControlMotor(socket_can_fd, 524,
                                                              int_speed);
     else
