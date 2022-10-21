@@ -3,5 +3,7 @@
 IMU.Machine.Middle.Angle: 0.3256
 Axis0.Can.ID: 0x010
 Axis1.Can.ID: 0x020
+# Remember to open set the two parmas [true] in the real system run time
+# And set the DJI [S1==3](in the middle)
 Debug.Momentum.Wheel: 0
 Debug.Back.Drive.Wheel: 1
