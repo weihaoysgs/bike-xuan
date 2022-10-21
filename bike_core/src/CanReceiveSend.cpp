@@ -62,15 +62,37 @@ int CanSendReceive::GetOneSocketCanInstance(const std::string &can_port_name) {
 void CanSendReceive::tSendSpecialCommand() const {
   int socket_can_fd = GetOneSocketCanInstance(receive_can_port_name_);
   const std::tuple<const canid_t, const bool, const std::array<uint8_t, 8>>
-      check_vel_position_cmd{521, true, {0x10}};
+      check_axis0_vel_position_cmd{OdriveMotorConfig::getSigleInstance()
+                                       .axis0_send_receive_vel_position_can_id_,
+                                   true,
+                                   {0x10}};
+
+  const std::tuple<const canid_t, const bool, const std::array<uint8_t, 8>>
+      check_axis1_vel_position_cmd{OdriveMotorConfig::getSigleInstance()
+                                       .axis1_send_receive_vel_position_can_id_,
+                                   true,
+                                   {0x10}};
+
   ros::Rate rate(100);
   while (ros::ok()) {
     if (!WriteDataToSocketCanDevice(
-            socket_can_fd, std::get<const canid_t>(check_vel_position_cmd),
-            std::get<const bool>(check_vel_position_cmd),
-            std::get<const std::array<uint8_t, 8>>(check_vel_position_cmd))) {
-      LOG(ERROR) << "Send Can Message Error";
+            socket_can_fd,
+            std::get<const canid_t>(check_axis0_vel_position_cmd),
+            std::get<const bool>(check_axis0_vel_position_cmd),
+            std::get<const std::array<uint8_t, 8>>(
+                check_axis0_vel_position_cmd))) {
+      LOG(ERROR) << "Send Axis0 Can Message Error";
     }
+
+    if (!WriteDataToSocketCanDevice(
+            socket_can_fd,
+            std::get<const canid_t>(check_axis1_vel_position_cmd),
+            std::get<const bool>(check_axis1_vel_position_cmd),
+            std::get<const std::array<uint8_t, 8>>(
+                check_axis1_vel_position_cmd))) {
+      LOG(ERROR) << "Send Axis1 Can Message Error";
+    }
+
     rate.sleep();
   }
 }
@@ -99,15 +121,19 @@ int CanSendReceive::WriteDataToSocketCanDevice(
 void CanSendReceive::ParserSpecialCanMessage(
     uint32_t can_id, can_frame &receive_can_frame) const {
   // TODO: change the ID define position
-  constexpr uint32_t motor_position_vel_can_msg_can_id = 521;
-  if (motor_position_vel_can_msg_can_id == can_id) {
+  uint32_t axisx_motor_position_vel_can_msg_can_id = can_id;
+  if (can_id == OdriveMotorConfig::getSigleInstance()
+                    .axis0_send_receive_vel_position_can_id_ ||
+      can_id == OdriveMotorConfig::getSigleInstance()
+                    .axis1_send_receive_vel_position_can_id_) {
     float *position = reinterpret_cast<float *>(receive_can_frame.data);
     float *speed = reinterpret_cast<float *>(receive_can_frame.data + 4);
     bike_core::odrive_motor_feedback_msg odrive_motor_vel_position_data;
     odrive_motor_vel_position_data.header.stamp = ros::Time::now();
     odrive_motor_vel_position_data.position = *position;
     odrive_motor_vel_position_data.speed = *speed;
-    odrive_motor_vel_position_data.can_id = motor_position_vel_can_msg_can_id;
+    odrive_motor_vel_position_data.can_id =
+        axisx_motor_position_vel_can_msg_can_id;
     pub_odrive_motor_msg_.publish(odrive_motor_vel_position_data);
     // LOG(INFO) << std::dec << "Speed: " << *speed << " "
     //           << "Position: " << *position;
@@ -147,7 +173,6 @@ int CanSendReceive::GetOneSocketCanSendInstance(const char *port_name) {
 
 int CanSendReceive::WriteDataToSocketCanDeviceControlMotor(
     const int &socket_can_fd, const canid_t &can_id, const int16_t int_speed) {
-
   can_frame frame;
   frame.can_id = can_id;
   frame.can_dlc = 8;
