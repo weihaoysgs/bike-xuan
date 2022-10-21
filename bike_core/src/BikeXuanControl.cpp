@@ -168,7 +168,7 @@ void BikeXuanControl::tBikeCoreControl() {
 
     float target_remote_speed = rc_ctrl_msg_ptr_->ch_x[0] / 2.2;
 
-    const float balance_roll_anle = 3.732;
+    const float balance_roll_anle = 0.3232;
     ////////////////////////////////////////////////////////////////////
     
     if (count % bike_pid.getSpeedPid()->calculate_time_ == 0) {
