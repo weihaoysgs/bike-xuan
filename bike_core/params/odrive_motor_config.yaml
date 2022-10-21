@@ -1,4 +1,5 @@
 %YAML:1.0
 ---
+IMU.Machine.Middle.Angle: 0.3256
 Axis0.Can.ID: 0x010
 Axis1.Can.ID: 0x020
