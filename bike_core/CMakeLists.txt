@@ -138,6 +138,7 @@ src/BikeXuanControl.cpp
 src/RemoteControlParser.cpp
 src/BikePid.cpp
 src/ServoControl.cpp
+src/OdriveMotorConfig.cpp
 ${parser_remote_data_node_header_SRC}
 )
 target_link_libraries(bike_xuan_core_control_node
