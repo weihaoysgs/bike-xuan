@@ -118,6 +118,17 @@ target_link_libraries(servo_control_test_node
   glog
 )
 
+# odrv0 config test node
+
+add_executable(odrv0_config_test_node
+test/odrv0_config_test_node.cpp
+src/OdriveMotorConfig.cpp
+)
+target_link_libraries(odrv0_config_test_node
+  ${catkin_LIBRARIES}
+  ${OpenCV_LIBRARIES}
+  glog
+)
 
 # odrive can 数据接受以及解析节点
 add_executable(can_send_receive_node
