@@ -48,8 +48,30 @@ BikeXuanControl::BikeXuanControl() : nh_("~") {
   update.detach();
 }
 
+/**
+ * \brief ros timer control the back wheel drive
+ */
 void BikeXuanControl::timerDriverWheelControll(const ros::TimerEvent &event) {
-  // LOG(INFO) << "Hello timerDriverWheelControll";
+  float drive_wheel_target = rc_ctrl_msg_ptr_->ch_x[0] / 100.0;
+  float drive_wheel_current = odrive_axis1_can_parsed_msg_ptr_->speed;
+
+  float drive_speed_pid_out = (*bike_pid_ptr_)(
+      drive_wheel_target, drive_wheel_current, PidParams::POSITION,
+      bike_pid_ptr_->getDriveWheelSpeedPid(),
+      bike_pid_ptr_->getDriveWheelSpeedPid()->debug_);
+
+  int16_t int_speed = static_cast<int16_t>(drive_speed_pid_out);
+  if (rc_ctrl_msg_ptr_->s1 == 3 &&
+      OdriveMotorConfig::getSigleInstance().debug_run_back_drive_wheel_) {
+    CanSendReceive::WriteDataToSocketCanDeviceControlMotor(
+        socket_can_fd_,
+        OdriveMotorConfig::getSigleInstance().axis1_set_input_pos_can_id_,
+        int_speed);
+  } else {
+    CanSendReceive::WriteDataToSocketCanDeviceControlMotor(
+        socket_can_fd_,
+        OdriveMotorConfig::getSigleInstance().axis1_set_input_pos_can_id_, 0);
+  }
 }
 
 void BikeXuanControl::tUpdate() {
@@ -179,7 +201,7 @@ void BikeXuanControl::tBikeCoreControl() {
 
     float target_remote_speed = rc_ctrl_msg_ptr_->ch_x[0] / 2.2;
 
-    const float balance_roll_anle = 0.3232;
+    const float balance_roll_anle = 1.4032;
     ////////////////////////////////////////////////////////////////////
 
     if (count % bike_pid.getSpeedPid()->calculate_time_ == 0) {
@@ -200,10 +222,11 @@ void BikeXuanControl::tBikeCoreControl() {
                    bike_pid.getAngleVelocityPid(),
                    bike_pid.getAngleVelocityPid()->debug_);
     }
-
+    LOG_IF(INFO, 0) << "middle angle: " << roll_angle_;
     ////////////////////////////////////////////////////////////////////
     int16_t int_speed = static_cast<int16_t>(angle_vel_pid_out_);
-    if (rc_ctrl_msg_ptr_->s1 == 3 && OdriveMotorConfig::getSigleInstance().debug_run_momentum_wheel_)
+    if (rc_ctrl_msg_ptr_->s1 == 3 &&
+        OdriveMotorConfig::getSigleInstance().debug_run_momentum_wheel_)
       CanSendReceive::WriteDataToSocketCanDeviceControlMotor(socket_can_fd, 524,
                                                              int_speed);
     else
