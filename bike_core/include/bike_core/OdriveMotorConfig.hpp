@@ -16,6 +16,9 @@ class OdriveMotorConfig {
         << file_path << "\t Is Open Error";
     odrv_config_file["Axis0.Can.ID"] >> axis0_motor_config_can_id_;
     odrv_config_file["Axis1.Can.ID"] >> axis1_motor_config_can_id_;
+    odrv_config_file["Debug.Momentum.Wheel"] >> debug_run_momentum_wheel_;
+    odrv_config_file["Debug.Back.Drive.Wheel"] >> debug_run_back_drive_wheel_;
+
     odrv_config_file.release();
 
     axis0_send_receive_vel_position_can_id_ = get_odrv0_can_send_id(
@@ -46,6 +49,7 @@ class OdriveMotorConfig {
   const static int SET_IUPUT_POS = 0x00C;
   const static int REBOOT = 0x00C;
   const static int GET_ENCODER_ESTIMATES = 0x009;
+  bool debug_run_momentum_wheel_{true}, debug_run_back_drive_wheel_{true};
 };
 
 #endif  // ODRIVE_MOTOR_CONFIG_HPP

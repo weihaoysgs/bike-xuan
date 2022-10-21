@@ -18,11 +18,15 @@ int main(int argc, char** argv) {
   std::cout << OdriveMotorConfig::getSigleInstance()
                    .axis1_send_receive_vel_position_can_id_
             << std::endl;
-  std::cout << OdriveMotorConfig::getSigleInstance()
-                   .axis0_set_input_pos_can_id_
+  std::cout << OdriveMotorConfig::getSigleInstance().axis0_set_input_pos_can_id_
             << std::endl;
-  std::cout << OdriveMotorConfig::getSigleInstance()
-                   .axis1_set_input_pos_can_id_
+  std::cout << OdriveMotorConfig::getSigleInstance().axis1_set_input_pos_can_id_
             << std::endl;
+  if (OdriveMotorConfig::getSigleInstance().debug_run_back_drive_wheel_) {
+    std::cout << "debug_run_back_drive_wheel_" << std::endl;
+  }
+  if (OdriveMotorConfig::getSigleInstance().debug_run_momentum_wheel_) {
+    std::cout << "debug_run_momentum_wheel_" << std::endl;
+  }
   ros::spin();
 }
