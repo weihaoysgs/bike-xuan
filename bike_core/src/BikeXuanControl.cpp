@@ -30,6 +30,11 @@ BikeXuanControl::BikeXuanControl() : nh_("~") {
   bike_balance_timer_ = nh_.createTimer(ros::Duration(1.0 / 1000),
                                         &BikeXuanControl::timerBalance, this);
 
+  bike_driver_wheel_control_timer_ = nh_.createTimer(
+      ros::Duration(bike_pid_ptr_->getDriveWheelSpeedPid()->calculate_time_ /
+                    1000.0),
+      &BikeXuanControl::timerDriverWheelControll, this);
+
   std::thread t_bike_core_control =
       std::thread(&BikeXuanControl::tBikeCoreControl, this);
   t_bike_core_control.detach();
@@ -39,6 +44,10 @@ BikeXuanControl::BikeXuanControl() : nh_("~") {
 
   std::thread update = std::thread(&BikeXuanControl::tUpdate, this);
   update.detach();
+}
+
+void BikeXuanControl::timerDriverWheelControll(const ros::TimerEvent &event) {
+  // LOG(INFO) << "Hello timerDriverWheelControll";
 }
 
 void BikeXuanControl::tUpdate() {
@@ -170,7 +179,7 @@ void BikeXuanControl::tBikeCoreControl() {
 
     const float balance_roll_anle = 0.3232;
     ////////////////////////////////////////////////////////////////////
-    
+
     if (count % bike_pid.getSpeedPid()->calculate_time_ == 0) {
       speed_pid_out_ =
           bike_pid(0.0, current_speed_, PidParams::POSITION,
