@@ -93,6 +93,7 @@ src/CanReceiveSend.cpp
 )
 target_link_libraries(test_can_send_receive_node
   ${catkin_LIBRARIES}
+  ${OpenCV_LIBRARIES}
   glog
 )
 # BikePid test node
@@ -125,6 +126,7 @@ src/CanReceiveSend.cpp
 )
 target_link_libraries(can_send_receive_node
   ${catkin_LIBRARIES}
+  ${OpenCV_LIBRARIES}
   glog
 )
 
