@@ -1,9 +1,9 @@
 #ifndef BIKE_PID_HPP
 #define BIKE_PID_HPP
 
+#include <geometry_msgs/Vector3.h>
 #include <glog/logging.h>
 #include <ros/ros.h>
-#include <geometry_msgs/Vector3.h>
 
 #include <memory>
 #include <opencv2/opencv.hpp>
@@ -24,7 +24,7 @@ struct PidParams {
     file["Use.Integal.Limit"] >> use_intgral_limit_;
     file["Use.Output.Limit"] >> use_output_limit_;
     file["CalculateTime"] >> calculate_time_;
-    file["Debug"] >> debug_; 
+    file["Debug"] >> debug_;
     LOG(INFO) << pid_name_ << " param read complete!";
     LOG_IF(WARNING, 1) << "Kp: " << kp_ << "\tKi: " << ki_ << "\tKd: " << kd_
                        << "\tPid.Name: " << pid_name_
@@ -53,12 +53,12 @@ class BikePid {
                    const PidParams::PidType PID_TYPE,
                    std::shared_ptr<PidParams> pid, bool debug) const;
   const float CalculatePositionSpeedPid(float target, float current,
-                                        std::shared_ptr<PidParams> pid, bool debug) const;
-  std::shared_ptr<PidParams> getAngleVelocityPid() const {
-    return angle_vel_pid_ptr_;
-  };
+                                        std::shared_ptr<PidParams> pid,
+                                        bool debug) const;
+  std::shared_ptr<PidParams> getAngleVelocityPid() const { return angle_vel_pid_ptr_; };
   std::shared_ptr<PidParams> getAnglePid() const { return angle_pid_ptr_; };
   std::shared_ptr<PidParams> getSpeedPid() const { return speed_pid_ptr_; };
+  std::shared_ptr<PidParams> getDriveWheelSpeedPid() const { return drive_wheel_speed_pid_ptr_; };
 
  public:
   static BikePid& getInstance() {
@@ -72,6 +72,7 @@ class BikePid {
   std::shared_ptr<PidParams> angle_pid_ptr_;
   std::shared_ptr<PidParams> angle_vel_pid_ptr_;
   std::shared_ptr<PidParams> speed_pid_ptr_;
+  std::shared_ptr<PidParams> drive_wheel_speed_pid_ptr_;
 };
 
 #endif  // BIKE_PID_HPP

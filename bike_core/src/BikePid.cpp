@@ -3,16 +3,18 @@
 BikePid::BikePid() : nh_("~") {
   LOG(INFO) << "Bike PID";
   const std::string speed_pid_file =
-      "/home/hll/code_space/bike_ws/src/bike_core/params/bike_speed_pid.yaml";
+      "./src/bike_core/params/bike_speed_pid.yaml";
   const std::string angle_pid_file =
-      "/home/hll/code_space/bike_ws/src/bike_core/params/bike_angle_pid.yaml";
+      "./src/bike_core/params/bike_angle_pid.yaml";
   const std::string angle_vel_pid_file =
-      "/home/hll/code_space/bike_ws/src/bike_core/params/"
-      "bike_angle_velocity_pid.yaml";
+      "./src/bike_core/params/bike_angle_velocity_pid.yaml";
+  const std::string drive_wheel_speed_pid_file =
+      "./src/bike_core/params/drive_wheel_speed_pid.yaml";
   speed_pid_ptr_ = std::make_shared<PidParams>(speed_pid_file);
   angle_pid_ptr_ = std::make_shared<PidParams>(angle_pid_file);
   angle_vel_pid_ptr_ = std::make_shared<PidParams>(angle_vel_pid_file);
-
+  drive_wheel_speed_pid_ptr_ =
+      std::make_shared<PidParams>(drive_wheel_speed_pid_file);
   pub_pid_target_current_ =
       nh_.advertise<geometry_msgs::Vector3>("pid_target_current", 10);
 }
@@ -64,18 +66,17 @@ const float BikePid::CalculatePositionSpeedPid(float target, float current,
 
   LOG_IF(WARNING, debug) << std::setprecision(4)
                          << std::setiosflags(std::ios::fixed)
-                         << setiosflags(std::ios::showpos)
-                         << "Pid.Kp: " << pid->kp_ /* << "\tPid.Ki: " << pid->ki_
-                         << "\tPid.Kd: "  << pid->kd_
-                         << "\tPid.Use.Output.Limit: " << pid->use_output_limit_
-                         << "\tPid.error: " << pid->error_
-                         << "\tPid.Integral: " << pid->error_integral_ */
+                         << setiosflags(std::ios::showpos) << "Pid.Kp: "
+                         << pid->kp_ /* << "\tPid.Ki: " << pid->ki_
+           << "\tPid.Kd: "  << pid->kd_
+           << "\tPid.Use.Output.Limit: " << pid->use_output_limit_
+           << "\tPid.error: " << pid->error_
+           << "\tPid.Integral: " << pid->error_integral_ */
                          << "\tPid.Name: " << pid->pid_name_
                          << "\tPid.Output: " << pid->output_
                          << "\tPid.Current: " << pid->current_
                          << "\tPid.Target: " << pid->target_;
-  if (debug)
-  {
+  if (debug) {
     geometry_msgs::Vector3 pid_debug;
     pid_debug.x = target;
     pid_debug.y = current;
