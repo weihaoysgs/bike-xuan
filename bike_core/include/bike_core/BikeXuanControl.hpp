@@ -102,7 +102,7 @@ private:
   bool first_imu_msg_rece_{true};
   float last_gyro_speed_{0.0};
   bool cal_angle_vel_pid_ = false, cal_angle_pid_ = false, cal_speed_pid_ = false;
-
+  double bike_roll_balance_angle_{0.0};
 private:
   float angle_vel_pid_out_{0.0};
   float angle_pid_out_{0.0};

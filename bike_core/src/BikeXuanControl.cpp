@@ -92,8 +92,7 @@ void BikeXuanControl::tUpdate() {
  * \brief Calculate angle vel pid per 2ms
  */
 void BikeXuanControl::AngleVelocityPidControl() {
-  // 调试角速度环的时候，正常的一个 *100 倍之后的输入是 [-4,4] 左右，为 IMU
-  // 原始输入
+  
   angle_vel_pid_out_ =
       (*bike_pid_ptr_)(angle_pid_out_, gyro_x_speed_, PidParams::POSITION,
                        bike_pid_ptr_->getAngleVelocityPid(),
@@ -113,20 +112,18 @@ void BikeXuanControl::AngleVelocityPidControl() {
  * \brief Calculate angle pid per 10ms
  */
 void BikeXuanControl::AnglePidControl() {
-  // the param should get in the system init
-  constexpr float roll_balance_angle_ = 3.6;
-  // 角度环的输出是速度环的输入，角度环的输出目前大概在 [-8,8] 左右
-  // 输入大概在 [-3,3] 左右，调试时的输入为 IMU 原始输入
-  angle_pid_out_ = (*bike_pid_ptr_)(
-      roll_balance_angle_, roll_angle_ - speed_pid_out_, PidParams::POSITION,
-      bike_pid_ptr_->getAnglePid(), bike_pid_ptr_->getAnglePid()->debug_);
+  
+  angle_pid_out_ =
+      (*bike_pid_ptr_)(bike_roll_balance_angle_, roll_angle_ - speed_pid_out_,
+                       PidParams::POSITION, bike_pid_ptr_->getAnglePid(),
+                       bike_pid_ptr_->getAnglePid()->debug_);
 }
 
 /**
  * \brief Calculate speed pid per 10ms
  */
 void BikeXuanControl::SpeedPidControl() {
-  // 当前反馈的速度 *10 大概在 [-300,300] 之间
+  
   speed_pid_out_ = (*bike_pid_ptr_)(0.0, current_speed_, PidParams::POSITION,
                                     bike_pid_ptr_->getSpeedPid(),
                                     bike_pid_ptr_->getSpeedPid()->debug_);
