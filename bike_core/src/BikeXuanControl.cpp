@@ -2,7 +2,7 @@
 
 BikeXuanControl::BikeXuanControl() : nh_("~") {
   bike_roll_balance_angle_ =
-     OdriveMotorConfig::getSigleInstance().imu_machine_middle_angle_;
+      OdriveMotorConfig::getSigleInstance().imu_machine_middle_angle_;
   LOG(INFO) << "Bike.Machine.IMU.Middle.Angle: " << bike_roll_balance_angle_;
   const std::string can_port_name = "can0";
   socket_can_fd_ =
@@ -92,7 +92,6 @@ void BikeXuanControl::tUpdate() {
  * \brief Calculate angle vel pid per 2ms
  */
 void BikeXuanControl::AngleVelocityPidControl() {
-  
   angle_vel_pid_out_ =
       (*bike_pid_ptr_)(angle_pid_out_, gyro_x_speed_, PidParams::POSITION,
                        bike_pid_ptr_->getAngleVelocityPid(),
@@ -112,7 +111,6 @@ void BikeXuanControl::AngleVelocityPidControl() {
  * \brief Calculate angle pid per 10ms
  */
 void BikeXuanControl::AnglePidControl() {
-  
   angle_pid_out_ =
       (*bike_pid_ptr_)(bike_roll_balance_angle_, roll_angle_ - speed_pid_out_,
                        PidParams::POSITION, bike_pid_ptr_->getAnglePid(),
@@ -123,7 +121,6 @@ void BikeXuanControl::AnglePidControl() {
  * \brief Calculate speed pid per 10ms
  */
 void BikeXuanControl::SpeedPidControl() {
-  
   speed_pid_out_ = (*bike_pid_ptr_)(0.0, current_speed_, PidParams::POSITION,
                                     bike_pid_ptr_->getSpeedPid(),
                                     bike_pid_ptr_->getSpeedPid()->debug_);
