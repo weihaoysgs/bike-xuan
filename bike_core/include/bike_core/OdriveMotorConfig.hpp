@@ -18,6 +18,7 @@ class OdriveMotorConfig {
     odrv_config_file["Axis1.Can.ID"] >> axis1_motor_config_can_id_;
     odrv_config_file["Debug.Momentum.Wheel"] >> debug_run_momentum_wheel_;
     odrv_config_file["Debug.Back.Drive.Wheel"] >> debug_run_back_drive_wheel_;
+    odrv_config_file["IMU.Machine.Middle.Angle"] >> imu_machine_middle_angle_;
 
     odrv_config_file.release();
 

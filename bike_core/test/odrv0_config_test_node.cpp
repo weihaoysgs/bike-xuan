@@ -28,5 +28,7 @@ int main(int argc, char** argv) {
   if (OdriveMotorConfig::getSigleInstance().debug_run_momentum_wheel_) {
     std::cout << "debug_run_momentum_wheel_" << std::endl;
   }
+  std::cout << "IMU.Machine.Middle.Angle:" << OdriveMotorConfig::getSigleInstance().imu_machine_middle_angle_
+            << std::endl;
   ros::spin();
 }
