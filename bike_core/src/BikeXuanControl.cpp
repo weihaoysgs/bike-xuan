@@ -1,6 +1,9 @@
 #include "bike_core/BikeXuanControl.hpp"
 
 BikeXuanControl::BikeXuanControl() : nh_("~") {
+  bike_roll_balance_angle_ =
+     OdriveMotorConfig::getSigleInstance().imu_machine_middle_angle_;
+  LOG(INFO) << "Bike.Machine.IMU.Middle.Angle: " << bike_roll_balance_angle_;
   const std::string can_port_name = "can0";
   socket_can_fd_ =
       CanSendReceive::GetOneSocketCanSendInstance(can_port_name.c_str());
