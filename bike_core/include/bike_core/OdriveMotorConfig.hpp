@@ -51,6 +51,7 @@ class OdriveMotorConfig {
   const static int REBOOT = 0x00C;
   const static int GET_ENCODER_ESTIMATES = 0x009;
   bool debug_run_momentum_wheel_{true}, debug_run_back_drive_wheel_{true};
+  double imu_machine_middle_angle_{0.0};
 };
 
 #endif  // ODRIVE_MOTOR_CONFIG_HPP
