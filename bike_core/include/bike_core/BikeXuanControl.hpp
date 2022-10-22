@@ -19,11 +19,22 @@ struct ImuPose {
 
 class BikeXuanControl {
  public:
+  // Constructor function
   BikeXuanControl();
+  
+  // Deconstructor function
   ~BikeXuanControl() { if (socket_can_fd_) close(socket_can_fd_); };
+
+  // Check the subscriber message timestamp
   const bool ChechSubscriberMessageTimestamp() const;
+
+  // Calculate angle vel speed pid
   void AngleVelocityPidControl();
+
+  // Calculate angle pid
   void AnglePidControl();
+
+  // Calculate speed pid
   void SpeedPidControl();
  public:
   std::function<tf2Scalar(tf2Scalar)> radian2angle =
@@ -86,7 +97,7 @@ class BikeXuanControl {
   };
 
  private:
-  // void timerthreadBikeCoreControl(const ros::TimerEvent &event);
+  // thread and ros timer to control the bike blance
   void tBikeCoreControl();
   void tBalance();
   void tUpdate();
