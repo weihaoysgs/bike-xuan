@@ -1,19 +1,25 @@
 # Bike-XUAN
 > Author: weihaoysgs@gmail.com
 
-<img src="./images/xuan.jpg" width="600px">
+<center><img src="./images/xuan.jpg" width="600px"></center>
 
 
 
-<img src="./images/bike_wh.jpg" width="500px">
+<center><img src="./images/bike_wh.jpg" width="500px"></center>
+
+
 
 
 
 $\quad$ 整个项目主要复现了稚挥君 `XUAN` 自行车，但具体的技术方案上存在一定的差别，机械结构上对动量轮的支撑机构进行了小小的改进，去掉了原先可以活动的结构。电机控制上则使用的是现成的 `odrive`。在整个控制程序中是基于 `ROS` 这一通信中间件，结合 `CAN` 总线进行的数据交互，没有使用单独的单片机去做电机驱动。控制算法使用的是经典 `PID` 控制。同时值得一提的是在 `AI` 处理模块中使用的则是和稚挥君同款的华为升腾 `Atlas 200 DK` 处理芯片，该芯片由全国大学生智能汽车竞赛航天组主办方，中国航天科工第三研究院赞助。
 
-<img src="./images/atlas_200_wh.jpg" width="300px">
+<center><img src="./images/atlas_200_wh.jpg" width="300px"></center>
+
+
 
 ## 1.0 硬件选型
+
+<center></center>
 
 |           名称           |          型号           |
 | :----------------------: | :---------------------: |
@@ -27,6 +33,8 @@ $\quad$ 整个项目主要复现了稚挥君 `XUAN` 自行车，但具体的技�
 |      部分机械结构件      |  树脂打印或者金属加工   |
 |          自行车          |          死飞           |
 |          遥控器          | `DJI Robomaster`遥控器  |
+
+
 
 ## 2.0 核心控制节点介绍
 
