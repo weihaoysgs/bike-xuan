@@ -41,11 +41,21 @@ class RemoteControlDataParser : public QObject {
     ros::shutdown();
   };
  public slots:
+  // Qt slots
   void ReadRemoteControlSerialDataCallback();
 
  private:
+ /**
+  * \brief Parse the DJI remote data
+  * \param sbus_buf receive serial data buffer
+  * \param rc_ctrl parsed remote data, ros msg
+  */
   void Parser(const QByteArray &sbus_buf,
               bike_core::remote_control_msg &rc_ctrl) const;
+ /**
+  * \brief Init serial port to receive remote data
+  * \param port_name serial port name
+  */            
   bool InitRemoteCtrlSerialport(const std::string &port_name) const;
 
  private:
