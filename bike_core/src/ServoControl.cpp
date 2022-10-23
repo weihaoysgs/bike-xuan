@@ -13,7 +13,6 @@ ServoControl::ServoControl() {
               << " is online;";
   else
     LOG(FATAL) << "Servo is Offline!!!";
-  this->SetSerilaServoAngle(10.0);
 }
 
 void ServoControl::SetSerilaServoAngle(const float angle) {
