@@ -98,3 +98,54 @@ float gyro_speed_error = gyro_msg.x;
 // 电机向右转速度为负数，向左转速度为正数
 current_speed = odrive_can_parsed_msg_ptr_->speed;
 ```
+
+## 小小的错误记录一下，出现了如下报错
+在使用商家给的程序的时候在 `/usr/local/include/CSerialPort/SerialPort_global.h` 下有如下定义
+```c++
+typedef long long int64; ///< 64 bit signed unix 定义Unix int64
+```
+但是在这个程序中我又使用了 `opencv` 
+因此出现了如下报错
+```shell
+n file included from /usr/include/opencv2/core/cvdef.h:67:0,
+                 from /usr/include/opencv2/core.hpp:52,
+                 from /usr/include/opencv2/opencv.hpp:52,
+                 from /home/hll/code_space/bike_ws/src/bike_core/include/bike_core/OdriveMotorConfig.hpp:9,
+                 from /home/hll/code_space/bike_ws/src/bike_core/include/bike_core/ServoControl.hpp:12,
+                 from /home/hll/code_space/bike_ws/src/bike_core/src/ServoControl.cpp:1:
+/usr/include/opencv2/core/hal/interface.h:57:20: error: conflicting declaration ‘typedef int64_t int64’
+    typedef int64_t int64;
+                    ^~~~~
+In file included from /usr/local/include/CSerialPort/SerialPort.h:19:0,
+                 from /home/hll/code_space/bike_ws/src/bike_core/include/bike_core/ServoControl.hpp:9,
+                 from /home/hll/code_space/bike_ws/src/bike_core/src/ServoControl.cpp:1:
+/usr/local/include/CSerialPort/SerialPort_global.h:30:19: note: previous declaration as ‘typedef long long int int64’
+ typedef long long int64; ///< 64 bit signed unix 定义Unix int64
+                   ^~~~~
+In file included from /usr/include/opencv2/core/cvdef.h:67:0,
+                 from /usr/include/opencv2/core.hpp:52,
+                 from /usr/include/opencv2/opencv.hpp:52,
+                 from /home/hll/code_space/bike_ws/src/bike_core/include/bike_core/OdriveMotorConfig.hpp:9,
+                 from /home/hll/code_space/bike_ws/src/bike_core/include/bike_core/ServoControl.hpp:12,
+                 from /home/hll/code_space/bike_ws/src/bike_core/test/servo_control_test_node.cpp:1:
+/usr/include/opencv2/core/hal/interface.h:57:20: error: conflicting declaration ‘typedef int64_t int64’
+    typedef int64_t int64;
+                    ^~~~~
+In file included from /usr/local/include/CSerialPort/SerialPort.h:19:0,
+                 from /home/hll/code_space/bike_ws/src/bike_core/include/bike_core/ServoControl.hpp:9,
+                 from /home/hll/code_space/bike_ws/src/bike_core/test/servo_control_test_node.cpp:1:
+/usr/local/include/CSerialPort/SerialPort_global.h:30:19: note: previous declaration as ‘typedef long long int int64’
+ typedef long long int64; ///< 64 bit signed unix 定义Unix int64
+                   ^~~~~
+In file included from /usr/include/opencv2/core/cvdef.h:67:0,
+                 from /usr/include/opencv2/core.hpp:52,
+                 from /usr/include/opencv2/opencv.hpp:52,
+                 from /home/hll/code_space/bike_ws/src/bike_core/include/bike_core/OdriveMotorConfig.hpp:9,
+                 from /home/hll/code_space/bike_ws/src/bike_core/include/bike_core/ServoControl.hpp:12,
+                 from /home/hll/code_space/bike_ws/src/bike_core/src/ServoControl.cpp:1:
+/usr/include/opencv2/core/hal/interface.h:57:20: error: conflicting declaration ‘typedef int64_t int64’
+    typedef int64_t int64;
+                    ^~~~~
+```
+大概意思就是多个地方对 int64 的定义冲突了。
+因此我将商家给的程序部分的 `long long` 改为了一个 `long` 使用
