@@ -149,3 +149,11 @@ In file included from /usr/include/opencv2/core/cvdef.h:67:0,
 ```
 大概意思就是多个地方对 int64 的定义冲突了。
 因此我将商家给的程序部分的 `long long` 改为了一个 `long` 使用
+
+## 在部署到新的环境上的时候出现的和 `Anaconda` 兼容性错误
+```shell
+/usr/lib/x86_64-linux-gnu/libapr-1.so.0：对‘uuid_generate@UUID_1.0’未定义的引用
+collect2: error: ld returned 1 exit status
+```
+解决方案
+- https://blog.csdn.net/qq_31511955/article/details/111278684
