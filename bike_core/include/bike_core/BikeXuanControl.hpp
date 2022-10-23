@@ -8,6 +8,7 @@
 #include "bike_core/BikePid.hpp"
 #include "bike_core/pid_params_msg.h"
 #include "bike_core/OdriveMotorConfig.hpp"
+#include "bike_core/ServoControl.hpp"
 
 struct ImuPose {
   ImuPose() : yaw_(0.0), roll_(0.0), pitch_(0.0){};
@@ -114,6 +115,7 @@ private:
   float last_gyro_speed_{0.0};
   bool cal_angle_vel_pid_ = false, cal_angle_pid_ = false, cal_speed_pid_ = false;
   double bike_roll_balance_angle_{0.0};
+  float faucet_direction_{0.0}; 
 private:
   float angle_vel_pid_out_{0.0};
   float angle_pid_out_{0.0};

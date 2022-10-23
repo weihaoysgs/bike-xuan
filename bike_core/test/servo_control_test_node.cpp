@@ -14,7 +14,7 @@ void InitGlog() {
 int main(int argc, char** argv) {
   InitGlog();
   ros::init(argc, argv, "test_servo_control_node");
-  ServoControl servo_control;
+  ServoControl::getSingleInstance().SetSerilaServoAngle(90.0);
   LOG(INFO) << "Hello Servo Control Node";
   ros::spin();
   return 0;
