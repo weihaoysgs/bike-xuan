@@ -10,6 +10,9 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+include_directories(${CMAKE_INSTALL_PREFIX}/include)
+link_directories(${CMAKE_INSTALL_PREFIX}/bin)
+
 find_package(catkin REQUIRED COMPONENTS
   roscpp
   rospy
@@ -116,6 +119,8 @@ target_link_libraries(servo_control_test_node
   ${catkin_LIBRARIES}
   ${OpenCV_LIBRARIES}
   glog
+  fsuartservo
+  cserialport
 )
 
 # odrv0 config test node
@@ -159,4 +164,6 @@ target_link_libraries(bike_xuan_core_control_node
   Qt5::Core
   Qt5::SerialPort
   glog
+  fsuartservo
+  cserialport
 )
