@@ -7,3 +7,8 @@ Axis1.Can.ID: 0x020
 # And set the DJI [S1==3](in the middle)
 Debug.Momentum.Wheel: 1
 Debug.Back.Drive.Wheel: 1
+
+# Servo Config
+Servo.Port.Name: "dev/ttyUSB0"
+Servo.ID: 0
+Servo.BaudRate: 115200
