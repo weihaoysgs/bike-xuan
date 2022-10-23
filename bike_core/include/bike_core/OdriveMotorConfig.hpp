@@ -19,7 +19,9 @@ class OdriveMotorConfig {
     odrv_config_file["Debug.Momentum.Wheel"] >> debug_run_momentum_wheel_;
     odrv_config_file["Debug.Back.Drive.Wheel"] >> debug_run_back_drive_wheel_;
     odrv_config_file["IMU.Machine.Middle.Angle"] >> imu_machine_middle_angle_;
-
+    odrv_config_file["Servo.Port.Name"] >> servo_port_name_;
+    odrv_config_file["Servo.ID"] >> servo_id_;
+    odrv_config_file["Servo.BaudRate"] >> servo_port_baud_rate_;
     odrv_config_file.release();
 
     axis0_send_receive_vel_position_can_id_ = get_odrv0_can_send_id(
@@ -52,6 +54,9 @@ class OdriveMotorConfig {
   const static int GET_ENCODER_ESTIMATES = 0x009;
   bool debug_run_momentum_wheel_{true}, debug_run_back_drive_wheel_{true};
   double imu_machine_middle_angle_{0.0};
+  int servo_id_{-1};
+  std::string servo_port_name_{""};
+  int servo_port_baud_rate_;
 };
 
 #endif  // ODRIVE_MOTOR_CONFIG_HPP
