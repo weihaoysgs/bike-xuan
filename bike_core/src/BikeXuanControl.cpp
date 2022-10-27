@@ -55,12 +55,8 @@ BikeXuanControl::BikeXuanControl() : nh_("~") {
  * \brief ros timer control the back wheel drive
  */
 void BikeXuanControl::timerDriverWheelControll(const ros::TimerEvent &event) {
-  float drive_wheel_target = rc_ctrl_msg_ptr_->ch_x[2] / 100.0;
+  float drive_wheel_target = rc_ctrl_msg_ptr_->ch_x[3] / 100.0;
   float drive_wheel_current = odrive_axis1_can_parsed_msg_ptr_->speed;
-  faucet_direction_ = rc_ctrl_msg_ptr_->ch_x[0] / 4.8;
-
-  // control servo 
-  ServoControl::getSingleInstance().SetSerilaServoAngle(faucet_direction_);
   // control back wheel
   float drive_speed_pid_out = (*bike_pid_ptr_)(
       drive_wheel_target, drive_wheel_current, PidParams::POSITION,

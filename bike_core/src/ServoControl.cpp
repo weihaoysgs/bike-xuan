@@ -20,7 +20,7 @@ void ServoControl::SetSerilaServoAngle(const float angle) {
       wait_servo_report = [](fsuservo::FSUS_Protocol& protocol,
                              fsuservo::FSUS_Servo* servo) -> bool {
     servo->wait();
-    LOG(INFO) << "Real Angle = " << servo->curRawAngle
+    LOG(INFO) << "Real Angle = " << static_cast<float>(servo->curRawAngle)
               << ", Target Angle = " << servo->targetRawAngle << endl;
     protocol.delay_ms(20);
   };
