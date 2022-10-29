@@ -100,6 +100,7 @@ class BikeXuanControl {
  private:
   // thread and ros timer to control the bike blance
   void tBikeCoreControl();
+  void tServoControl();
   void tBalance();
   void tUpdate();
   void timerBalance(const ros::TimerEvent &event);

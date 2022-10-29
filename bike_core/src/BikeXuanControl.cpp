@@ -49,6 +49,21 @@ BikeXuanControl::BikeXuanControl() : nh_("~") {
 
   std::thread update = std::thread(&BikeXuanControl::tUpdate, this);
   update.detach();
+
+  std::thread t_servo_control =
+      std::thread(&BikeXuanControl::tServoControl, this);
+  t_servo_control.detach();
+}
+
+void BikeXuanControl::tServoControl() {
+//   ros::Rate rate(5);
+
+//   while (ros::ok()) {
+//     // control servo
+//     faucet_direction_ = rc_ctrl_msg_ptr_->ch_x[0] / 4.8;
+//     ServoControl::getSingleInstance().SetSerilaServoAngle(faucet_direction_);
+//     rate.sleep();
+//   }
 }
 
 /**
@@ -198,7 +213,7 @@ void BikeXuanControl::tBikeCoreControl() {
 
     float target_remote_speed = rc_ctrl_msg_ptr_->ch_x[0] / 2.2;
 
-    const float balance_roll_anle = 1.4032;
+    const float balance_roll_anle = -1.3772;
     ////////////////////////////////////////////////////////////////////
 
     if (count % bike_pid.getSpeedPid()->calculate_time_ == 0) {
@@ -226,6 +241,9 @@ void BikeXuanControl::tBikeCoreControl() {
         OdriveMotorConfig::getSigleInstance().debug_run_momentum_wheel_)
       CanSendReceive::WriteDataToSocketCanDeviceControlMotor(socket_can_fd, 524,
                                                              int_speed);
+    else if (balance_roll_anle - roll_angle_ > std::abs(10))
+      CanSendReceive::WriteDataToSocketCanDeviceControlMotor(socket_can_fd, 524,
+                                                             0);
     else
       CanSendReceive::WriteDataToSocketCanDeviceControlMotor(socket_can_fd, 524,
                                                              0);
