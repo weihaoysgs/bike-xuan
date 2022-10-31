@@ -213,7 +213,7 @@ void BikeXuanControl::tBikeCoreControl() {
 
     float target_remote_speed = rc_ctrl_msg_ptr_->ch_x[0] / 2.2;
 
-    const float balance_roll_anle = -1.3772;
+    float balance_roll_anle = OdriveMotorConfig::getSigleInstance().imu_machine_middle_angle_;
     ////////////////////////////////////////////////////////////////////
 
     if (count % bike_pid.getSpeedPid()->calculate_time_ == 0) {
