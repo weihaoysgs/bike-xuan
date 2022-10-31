@@ -5,6 +5,10 @@ SbusSimulateSerial::SbusSimulateSerial() {
   sbus_simulate_ser_ = std::make_shared<QSerialPort>();
   InitSbusSimulateSerialPort(
       OdriveMotorConfig::getSigleInstance().servo_port_name_);
+  //   std::thread sbus_output_thread =
+  //       std::thread(&SbusSimulateSerial::SbusOutputThread, this);
+  //   sbus_output_thread.detach();
+  SbusOutputThread();
 }
 
 bool SbusSimulateSerial::InitSbusSimulateSerialPort(
@@ -24,4 +28,60 @@ bool SbusSimulateSerial::InitSbusSimulateSerialPort(
     LOG(FATAL) << "Open SBUS Simulate Serial Failed In: " << port_name;
     return false;
   }
+}
+
+void SbusSimulateSerial::SbusOutputThread() {
+  while (ros::ok()) {
+    this->SbusSimulateOutput(16);
+  }
+}
+
+void SbusSimulateSerial::SetOutputValues(
+    const std::array<uint16_t, 16> &value) {
+  for (size_t i{0}; i < values_.size(); i++) {
+    values_[i] = value[i];
+  }
+  LOG(INFO) << "Update SBUS Output Data Success."
+            << "Now is: \n"
+            << std::for_each(
+                   values_.begin(), values_.end(),
+                   [](const int16_t &n) { std::cout << " " << n << " "; });
+  std::cout << std::endl;
+}
+
+const qint16 SbusSimulateSerial::SbusSimulateOutput(
+    const uint16_t channels_num) const {
+  int i = 0;
+  uint16_t value = 0;
+  uint8_t byteindex = 1;
+  uint8_t offset = 0;
+  uint8_t oframe[25] = {0};
+  memset(oframe, 0, 25);
+  oframe[0] = 0x0f;
+  oframe[24] = 0x00;
+
+  for (i = 0; (i < channels_num) && (i < 16); ++i) {
+    value = (unsigned short)(((values_[i] - SBUS_SCALE_OFFSET) /
+                              SBUS_SCALE_FACTOR) +
+                             .5f);
+    if (value > 0x07ff) {
+      value = 0x07ff;
+    }
+
+    while (offset >= 8) {
+      ++byteindex;
+      offset -= 8;
+    }
+
+    oframe[byteindex] |= (value << (offset)) & 0xff;
+    oframe[byteindex + 1] |= (value >> (8 - offset)) & 0xff;
+    oframe[byteindex + 2] |= (value >> (16 - offset)) & 0xff;
+    offset += 11;
+  }
+  static unsigned long long a = 0;
+  qint16 write_len = sbus_simulate_ser_->write((const char *)oframe, 25);
+  LOG_IF(ERROR, write_len < 0)
+      << "Sbus Simulate Output Error, Write Len: " << write_len;
+  sbus_simulate_ser_->waitForBytesWritten(1);
+  sleep(0.006);
 }
