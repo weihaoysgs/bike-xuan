@@ -123,6 +123,21 @@ target_link_libraries(servo_control_test_node
   cserialport
 )
 
+# ServoControl test node
+add_executable(sbus_simulate_test_node
+test/sbus_simulate_test_node.cpp
+src/SbusSimulate.cpp
+)
+
+target_link_libraries(sbus_simulate_test_node
+  ${catkin_LIBRARIES}
+  ${OpenCV_LIBRARIES}
+  glog
+  Qt5::Widgets
+  Qt5::Core
+  Qt5::SerialPort
+)
+
 # odrv0 config test node
 
 add_executable(odrv0_config_test_node
