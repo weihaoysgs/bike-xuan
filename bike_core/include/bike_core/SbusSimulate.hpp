@@ -3,6 +3,7 @@
 
 #include <glog/logging.h>
 #include <qserialport.h>
+#include <qthread.h>
 #include <ros/ros.h>
 #include <unistd.h>
 
@@ -24,13 +25,19 @@
   (int)(SBUS_TARGET_MIN - \
         (SBUS_SCALE_FACTOR * SBUS_RANGE_MIN + 0.5f))  // 874.5f
 
-class SbusSimulateSerial {
+class SbusSimulateSerial : public QObject {
  public:
   SbusSimulateSerial();
   ~SbusSimulateSerial() = default;
   bool InitSbusSimulateSerialPort(const std::string port_name) const;
   const qint16 SbusSimulateOutput(const uint16_t channels_num) const;
-  void SetOutputValues(const std::array<uint16_t, 16> &values);
+  void setOutputValues(const std::array<uint16_t, 16>& values);
+
+ public:
+  static SbusSimulateSerial& getSignalInstance() {
+    static SbusSimulateSerial sbus_simulate_ser;
+    return sbus_simulate_ser;
+  }
 
  private:
   void SbusOutputThread();
@@ -39,5 +46,11 @@ class SbusSimulateSerial {
   std::array<uint16_t, 16> values_{0};
   std::shared_ptr<QSerialPort> sbus_simulate_ser_;
 };
+
+class SBUSOutputManager{
+    
+};
+
+
 
 #endif  // SBUS_SIMULATE_HPP

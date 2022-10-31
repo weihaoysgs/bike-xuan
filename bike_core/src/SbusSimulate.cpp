@@ -1,14 +1,12 @@
 #include "bike_core/SbusSimulate.hpp"
 
 SbusSimulateSerial::SbusSimulateSerial() {
-  LOG(INFO) << "Hello SbusSimulateSerial";
-  sbus_simulate_ser_ = std::make_shared<QSerialPort>();
+  sbus_simulate_ser_ = std::make_shared<QSerialPort>(this);
   InitSbusSimulateSerialPort(
       OdriveMotorConfig::getSigleInstance().servo_port_name_);
-  //   std::thread sbus_output_thread =
-  //       std::thread(&SbusSimulateSerial::SbusOutputThread, this);
-  //   sbus_output_thread.detach();
-  SbusOutputThread();
+  std::thread sbus_output_thread =
+      std::thread(&SbusSimulateSerial::SbusOutputThread, this);
+  sbus_output_thread.detach();
 }
 
 bool SbusSimulateSerial::InitSbusSimulateSerialPort(
@@ -36,7 +34,7 @@ void SbusSimulateSerial::SbusOutputThread() {
   }
 }
 
-void SbusSimulateSerial::SetOutputValues(
+void SbusSimulateSerial::setOutputValues(
     const std::array<uint16_t, 16> &value) {
   for (size_t i{0}; i < values_.size(); i++) {
     values_[i] = value[i];
