@@ -35,6 +35,7 @@ add_message_files(
   odrive_can_msg.msg
   odrive_motor_feedback_msg.msg
   pid_params_msg.msg
+  sbus_channels_msg.msg
 )
 
 generate_messages(
@@ -123,10 +124,13 @@ target_link_libraries(servo_control_test_node
   cserialport
 )
 
+qt5_wrap_cpp(sbus_simulate_test_node_header_SRC include/bike_core/SbusSimulate.hpp)
+
 # ServoControl test node
 add_executable(sbus_simulate_test_node
 test/sbus_simulate_test_node.cpp
 src/SbusSimulate.cpp
+${sbus_simulate_test_node_header_SRC}
 )
 
 target_link_libraries(sbus_simulate_test_node
