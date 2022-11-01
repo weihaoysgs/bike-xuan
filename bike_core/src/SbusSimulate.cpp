@@ -5,7 +5,7 @@ SbusSimulateSerial::SbusSimulateSerial() : nh_("~") {
   InitSbusSimulateSerialPort(
       OdriveMotorConfig::getSigleInstance().servo_port_name_);
   sub_sbus_channels_value_ = nh_.subscribe<bike_core::sbus_channels_msg>(
-      "/subs_simulate_demo/topic", 100, &SbusSimulateSerial::SubSbusNewChannelsValueCallback, this);
+      "/bike_core_control_node/sbus_channel_values", 100, &SbusSimulateSerial::SubSbusNewChannelsValueCallback, this);
   SbusOutputThread();
 }
 
