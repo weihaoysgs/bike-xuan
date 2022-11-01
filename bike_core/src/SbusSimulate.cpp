@@ -1,12 +1,12 @@
 #include "bike_core/SbusSimulate.hpp"
 
-SbusSimulateSerial::SbusSimulateSerial() {
-  sbus_simulate_ser_ = std::make_shared<QSerialPort>(this);
+SbusSimulateSerial::SbusSimulateSerial() : nh_("~") {
+  sbus_simulate_ser_ = std::make_shared<QSerialPort>();
   InitSbusSimulateSerialPort(
       OdriveMotorConfig::getSigleInstance().servo_port_name_);
-  std::thread sbus_output_thread =
-      std::thread(&SbusSimulateSerial::SbusOutputThread, this);
-  sbus_output_thread.detach();
+  sub_sbus_channels_value_ = nh_.subscribe<bike_core::sbus_channels_msg>(
+      "/subs_simulate_demo/topic", 100, &SbusSimulateSerial::SubSbusNewChannelsValueCallback, this);
+  SbusOutputThread();
 }
 
 bool SbusSimulateSerial::InitSbusSimulateSerialPort(
@@ -31,6 +31,7 @@ bool SbusSimulateSerial::InitSbusSimulateSerialPort(
 void SbusSimulateSerial::SbusOutputThread() {
   while (ros::ok()) {
     this->SbusSimulateOutput(16);
+    ros::spinOnce();
   }
 }
 
@@ -76,10 +77,9 @@ const qint16 SbusSimulateSerial::SbusSimulateOutput(
     oframe[byteindex + 2] |= (value >> (16 - offset)) & 0xff;
     offset += 11;
   }
-  static unsigned long long a = 0;
   qint16 write_len = sbus_simulate_ser_->write((const char *)oframe, 25);
   LOG_IF(ERROR, write_len < 0)
       << "Sbus Simulate Output Error, Write Len: " << write_len;
   sbus_simulate_ser_->waitForBytesWritten(1);
-  sleep(0.006);
+  QThread::msleep(6);
 }

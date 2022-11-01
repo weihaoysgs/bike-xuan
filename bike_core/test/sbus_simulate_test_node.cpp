@@ -19,7 +19,6 @@ int main(int argc, char** argv) {
   QApplication app(argc, argv);
   InitGlog();
   ros::init(argc, argv, "subs_simulate_demo");
-  SbusSimulateSerial sbus_simulate;
-  ros::spin();
+  SbusSimulateSerial sbus_simu_ser;
   return 0;
 }

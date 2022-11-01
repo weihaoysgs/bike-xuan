@@ -12,6 +12,7 @@
 #include <thread>
 
 #include "bike_core/OdriveMotorConfig.hpp"
+#include "bike_core/sbus_channels_msg.h"
 
 #define SBUS_FRAME_SIZE 25
 #define SBUS_RANGE_MIN 200.0f
@@ -26,31 +27,28 @@
         (SBUS_SCALE_FACTOR * SBUS_RANGE_MIN + 0.5f))  // 874.5f
 
 class SbusSimulateSerial : public QObject {
+  Q_OBJECT
  public:
   SbusSimulateSerial();
   ~SbusSimulateSerial() = default;
   bool InitSbusSimulateSerialPort(const std::string port_name) const;
   const qint16 SbusSimulateOutput(const uint16_t channels_num) const;
   void setOutputValues(const std::array<uint16_t, 16>& values);
-
- public:
-  static SbusSimulateSerial& getSignalInstance() {
-    static SbusSimulateSerial sbus_simulate_ser;
-    return sbus_simulate_ser;
+  void SubSbusNewChannelsValueCallback(
+      const bike_core::sbus_channels_msg::ConstPtr& msg) {
+    for (size_t i{0}; i < msg->channels_value.size(); i++)
+      this->values_.at(i) = msg->channels_value[i];
+    LOG_IF(WARNING, 1) << "Sub New SBUS Channel Message";
   }
 
- private:
+ public:
   void SbusOutputThread();
 
  private:
+  ros::NodeHandle nh_;
   std::array<uint16_t, 16> values_{0};
+  ros::Subscriber sub_sbus_channels_value_;
   std::shared_ptr<QSerialPort> sbus_simulate_ser_;
 };
-
-class SBUSOutputManager{
-    
-};
-
-
 
 #endif  // SBUS_SIMULATE_HPP
