@@ -126,14 +126,14 @@ target_link_libraries(servo_control_test_node
 
 qt5_wrap_cpp(sbus_simulate_test_node_header_SRC include/bike_core/SbusSimulate.hpp)
 
-# ServoControl test node
-add_executable(sbus_simulate_test_node
-test/sbus_simulate_test_node.cpp
+# sbus simulate node
+add_executable(sbus_simulate_node
+node/SbusSimulateOutputNode.cpp
 src/SbusSimulate.cpp
 ${sbus_simulate_test_node_header_SRC}
 )
 
-target_link_libraries(sbus_simulate_test_node
+target_link_libraries(sbus_simulate_node
   ${catkin_LIBRARIES}
   ${OpenCV_LIBRARIES}
   glog
