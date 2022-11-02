@@ -83,6 +83,7 @@ ${parser_remote_data_node_header_SRC}
 )
 target_link_libraries(parser_remote_data_node
   ${catkin_LIBRARIES}
+  ${OpenCV_LIBRARIES}
   Qt5::Widgets
   Qt5::Core
   Qt5::SerialPort

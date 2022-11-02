@@ -22,6 +22,9 @@ class OdriveMotorConfig {
     odrv_config_file["Servo.Port.Name"] >> servo_port_name_;
     odrv_config_file["Servo.ID"] >> servo_id_;
     odrv_config_file["Servo.BaudRate"] >> servo_port_baud_rate_;
+    odrv_config_file["Dbus.Serial.Port.Name"] >> dbus_serial_port_name_;
+    odrv_config_file["Sbus.Serial.Port.Name"] >> sbus_serial_port_name_;
+    odrv_config_file["Imu.Serial.Port.Name"] >> imu_serial_port_name_;
     odrv_config_file.release();
 
     axis0_send_receive_vel_position_can_id_ = get_odrv0_can_send_id(
@@ -55,7 +58,8 @@ class OdriveMotorConfig {
   bool debug_run_momentum_wheel_{true}, debug_run_back_drive_wheel_{true};
   double imu_machine_middle_angle_{0.0};
   int servo_id_{-1};
-  std::string servo_port_name_{""};
+  std::string servo_port_name_{""}, dbus_serial_port_name_{""},
+      sbus_serial_port_name_{""}, imu_serial_port_name_{""};
   int servo_port_baud_rate_;
 };
 

@@ -4,7 +4,7 @@ RemoteControlDataParser::RemoteControlDataParser() {
   ros::NodeHandle nh("~");
   remote_ctl_node_ = std::make_shared<RemoteCtrlNode>(nh);
   remote_control_serial_ = std::make_shared<QSerialPort>();
-  this->InitRemoteCtrlSerialport("/dev/ttyUSB0");
+  this->InitRemoteCtrlSerialport(OdriveMotorConfig::getSigleInstance().dbus_serial_port_name_);
   connect(remote_control_serial_.get(), SIGNAL(readyRead()), this,
           SLOT(ReadRemoteControlSerialDataCallback()));
 
