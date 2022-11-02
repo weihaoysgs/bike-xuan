@@ -60,7 +60,7 @@ BikeXuanControl::BikeXuanControl() : nh_("~") {
 
 void BikeXuanControl::tServoControl() {
   //   ros::Rate rate(5);
-
+  
   //   while (ros::ok()) {
   //     // control servo
   //     faucet_direction_ = rc_ctrl_msg_ptr_->ch_x[0] / 4.8;
