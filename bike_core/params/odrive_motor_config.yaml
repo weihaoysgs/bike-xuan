@@ -1,6 +1,6 @@
 %YAML:1.0
 ---
-IMU.Machine.Middle.Angle: 0.3256
+IMU.Machine.Middle.Angle: 1.2372
 Axis0.Can.ID: 0x010
 Axis1.Can.ID: 0x020
 # Remember to open set the two parmas [true] in the real system run time
@@ -9,6 +9,9 @@ Debug.Momentum.Wheel: 1
 Debug.Back.Drive.Wheel: 1
 
 # Servo Config
-Servo.Port.Name: "/dev/ttyUSB0"
+Servo.Port.Name: "/dev/sbus_serial"
 Servo.ID: 0
 Servo.BaudRate: 115200
+
+Dbus.Serial.Port.Name: "/dev/dbus_serial"
+Imu.Serial.Port.Name: "/dev/imu_serial"
