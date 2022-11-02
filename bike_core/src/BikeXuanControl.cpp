@@ -59,20 +59,27 @@ BikeXuanControl::BikeXuanControl() : nh_("~") {
 }
 
 void BikeXuanControl::tServoControl() {
-//   ros::Rate rate(5);
+  //   ros::Rate rate(5);
 
-//   while (ros::ok()) {
-//     // control servo
-//     faucet_direction_ = rc_ctrl_msg_ptr_->ch_x[0] / 4.8;
-//     ServoControl::getSingleInstance().SetSerilaServoAngle(faucet_direction_);
-//     rate.sleep();
-//   }
+  //   while (ros::ok()) {
+  //     // control servo
+  //     faucet_direction_ = rc_ctrl_msg_ptr_->ch_x[0] / 4.8;
+  //     ServoControl::getSingleInstance().SetSerilaServoAngle(faucet_direction_);
+  //     rate.sleep();
+  //   }
 }
 
 /**
  * \brief ros timer control the back wheel drive
  */
 void BikeXuanControl::timerDriverWheelControll(const ros::TimerEvent &event) {
+
+  // control faucet turn angle
+  faucet_direction_ = rc_ctrl_msg_ptr_->ch_x[0] + 1500;
+  bike_core::sbus_channels_msg sbus_output_data;
+  sbus_output_data.channels_value[0] = faucet_direction_;
+  pub_sbus_channels_value_.publish(sbus_output_data);
+  
   float drive_wheel_target = rc_ctrl_msg_ptr_->ch_x[3] / 100.0;
   float drive_wheel_current = odrive_axis1_can_parsed_msg_ptr_->speed;
   // control back wheel
@@ -216,7 +223,8 @@ void BikeXuanControl::tBikeCoreControl() {
 
     float target_remote_speed = rc_ctrl_msg_ptr_->ch_x[0] / 2.2;
 
-    float balance_roll_anle = OdriveMotorConfig::getSigleInstance().imu_machine_middle_angle_;
+    float balance_roll_anle =
+        OdriveMotorConfig::getSigleInstance().imu_machine_middle_angle_;
     ////////////////////////////////////////////////////////////////////
 
     if (count % bike_pid.getSpeedPid()->calculate_time_ == 0) {

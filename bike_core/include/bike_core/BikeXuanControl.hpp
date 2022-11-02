@@ -9,6 +9,7 @@
 #include "bike_core/pid_params_msg.h"
 #include "bike_core/OdriveMotorConfig.hpp"
 #include "bike_core/ServoControl.hpp"
+#include "bike_core/sbus_channels_msg.h"
 
 struct ImuPose {
   ImuPose() : yaw_(0.0), roll_(0.0), pitch_(0.0){};
@@ -125,6 +126,7 @@ private:
   ros::NodeHandle nh_;
   ros::Subscriber sub_imu_ch100_msg_, sub_momentum_wheel_parsed_msg_;
   ros::Subscriber sub_remote_ctrl_msg_, sub_can_src_msg_;
+  ros::Publisher pub_sbus_channels_value_;
   ros::Timer bike_core_control_timer_;
   ros::Timer bike_balance_timer_;
   ros::Timer bike_driver_wheel_control_timer_;
