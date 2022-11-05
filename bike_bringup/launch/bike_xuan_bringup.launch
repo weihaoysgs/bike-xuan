@@ -3,7 +3,6 @@
     <node pkg="bike_core" type="can_send_receive_node" name="can_send_receive_node" output="screen"/>
     <!-- launch parse remote data node -->
     <node pkg="bike_core" type="parser_remote_data_node" name="parser_remote_data_node" output="screen"/>
-    <!-- launch bike-xuan core control node -->
-    <node pkg="bike_core" type="bike_xuan_core_control_node" name="bike_xuan_core_control_node" output="screen"/>
     <!-- launch sbus simulate serial send node -->
+    <node pkg="bike_core" type="sbus_simulate_node" name="sbus_simulate_node" output="screen"/>
 </launch>
