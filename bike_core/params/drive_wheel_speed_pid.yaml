@@ -1,7 +1,7 @@
 %YAML:1.0
 ---
 Pid.Name: drive_wheel_speed_pid
-Kp: 200.0
+Kp: 100.0
 Ki: 0.001
 Kd: 0.0
 CalculateTime: 20
