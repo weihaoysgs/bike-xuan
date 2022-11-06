@@ -9,7 +9,7 @@ Debug.Momentum.Wheel: 1
 Debug.Back.Drive.Wheel: 1
 
 # Servo Config
-Servo.Port.Name: "/dev/ttyUSB3"
+Servo.Port.Name: "/dev/ttyUSB0"
 Servo.ID: 0
 Servo.BaudRate: 115200
 
