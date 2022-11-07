@@ -65,7 +65,9 @@ void BikeXuanControl::tServoControl() {}
  */
 void BikeXuanControl::timerDriverWheelControll(const ros::TimerEvent &event) {
   // control faucet turn angle
-  faucet_direction_ = -rc_ctrl_msg_ptr_->ch_x[0] + 1700;
+  faucet_direction_ =
+      -rc_ctrl_msg_ptr_->ch_x[0] +
+      OdriveMotorConfig::getSigleInstance().servo_pwm_middle_angle_;
   bike_core::sbus_channels_msg sbus_output_data;
   sbus_output_data.channels_value[0] = static_cast<uint16_t>(faucet_direction_);
   pub_sbus_channels_value_.publish(sbus_output_data);
