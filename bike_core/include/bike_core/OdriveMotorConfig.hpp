@@ -25,6 +25,8 @@ class OdriveMotorConfig {
     odrv_config_file["Dbus.Serial.Port.Name"] >> dbus_serial_port_name_;
     odrv_config_file["Sbus.Serial.Port.Name"] >> sbus_serial_port_name_;
     odrv_config_file["Imu.Serial.Port.Name"] >> imu_serial_port_name_;
+    odrv_config_file["Output.Middle.Angle"] >> output_imu_middle_angle_; 
+    odrv_config_file["Servo.PWM.Middle.Value"] >> servo_pwm_middle_angle_;
     odrv_config_file.release();
 
     axis0_send_receive_vel_position_can_id_ = get_odrv0_can_send_id(
@@ -56,6 +58,8 @@ class OdriveMotorConfig {
   const static int REBOOT = 0x00C;
   const static int GET_ENCODER_ESTIMATES = 0x009;
   bool debug_run_momentum_wheel_{true}, debug_run_back_drive_wheel_{true};
+  bool output_imu_middle_angle_{false};
+  int servo_pwm_middle_angle_{1700};
   double imu_machine_middle_angle_{0.0};
   int servo_id_{-1};
   std::string servo_port_name_{""}, dbus_serial_port_name_{""},
