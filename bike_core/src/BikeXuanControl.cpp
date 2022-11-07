@@ -201,8 +201,6 @@ void BikeXuanControl::tBikeCoreControl() {
   geometry_msgs::Vector3 &gyro_msg = bike_xuan_imu_msg_ptr_->angular_velocity;
   ros::Rate rate(control_rate);
 
-  constexpr double balance_roll_angle = 6.8;
-
   BikePid bike_pid;
   unsigned int count = 0;
   while (ros::ok()) {
