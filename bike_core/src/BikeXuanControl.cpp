@@ -235,7 +235,9 @@ void BikeXuanControl::tBikeCoreControl() {
                    bike_pid.getAngleVelocityPid(),
                    bike_pid.getAngleVelocityPid()->debug_);
     }
-    LOG_IF(INFO, 0) << "middle angle: " << roll_angle_;
+    
+    LOG_IF(INFO, OdriveMotorConfig::getSigleInstance().output_imu_middle_angle_)
+        << "middle angle: " << roll_angle_;
     ////////////////////////////////////////////////////////////////////
     int16_t int_speed = static_cast<int16_t>(angle_vel_pid_out_);
     if (rc_ctrl_msg_ptr_->s1 == 3 &&
