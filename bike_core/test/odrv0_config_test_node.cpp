@@ -39,5 +39,12 @@ int main(int argc, char** argv) {
   std::cout << "Servo.BaudRate: "
             << OdriveMotorConfig::getSigleInstance().servo_port_baud_rate_
             << std::endl;
+  std::cout << "Servo.PWM.Middle.Value: "
+            << OdriveMotorConfig::getSigleInstance().servo_pwm_middle_angle_
+            << std::endl;
+  std::cout << "Output.Middle.Angle: "
+            << OdriveMotorConfig::getSigleInstance().output_imu_middle_angle_
+            << std::endl;
+
   ros::spin();
 }
