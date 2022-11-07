@@ -27,6 +27,7 @@ class OdriveMotorConfig {
     odrv_config_file["Imu.Serial.Port.Name"] >> imu_serial_port_name_;
     odrv_config_file["Output.Middle.Angle"] >> output_imu_middle_angle_; 
     odrv_config_file["Servo.PWM.Middle.Value"] >> servo_pwm_middle_angle_;
+    odrv_config_file["Bike.Turn.Scale"] >> bike_turn_scale_;
     odrv_config_file.release();
 
     axis0_send_receive_vel_position_can_id_ = get_odrv0_can_send_id(
@@ -61,6 +62,7 @@ class OdriveMotorConfig {
   bool output_imu_middle_angle_{false};
   int servo_pwm_middle_angle_{1700};
   double imu_machine_middle_angle_{0.0};
+  double bike_turn_scale_{0.0};
   int servo_id_{-1};
   std::string servo_port_name_{""}, dbus_serial_port_name_{""},
       sbus_serial_port_name_{""}, imu_serial_port_name_{""};

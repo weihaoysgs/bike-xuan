@@ -45,6 +45,8 @@ int main(int argc, char** argv) {
   std::cout << "Output.Middle.Angle: "
             << OdriveMotorConfig::getSigleInstance().output_imu_middle_angle_
             << std::endl;
-
+  std::cout << "Bike.Tunr.Scale: "
+            << OdriveMotorConfig::getSigleInstance().bike_turn_scale_
+            << std::endl;
   ros::spin();
 }
