@@ -70,20 +70,58 @@ void BikeXuanControl::tServoControl() {}
  * \brief ros timer control the back wheel drive
  */
 void BikeXuanControl::timerDriverWheelControll(const ros::TimerEvent &event) {
+  const float const_driver_speed = 2.0;
+  const float frame_center_x = 320.0, frame_center_y = 240.0;
+  faucet_direction_ =
+      OdriveMotorConfig::getSigleInstance().servo_pwm_middle_angle_;
+  bike_core::sbus_channels_msg sbus_output_data;
+  sbus_output_data.channels_value[0] = static_cast<uint16_t>(faucet_direction_);
+  // pub_sbus_channels_value_.publish(sbus_output_data);
+  float near_obj_center_x, near_obj_center_y, near_obj_distacne;
 
+  // 此时切换自动避障模式
+  if (rc_ctrl_msg_ptr_->s2 == 3) {
+    // 如果此时检测到了障碍物
+    if (road_obstacle_msg_ptr_->num_objects) {
+      // 找到最近的那个障碍物的距离和位置信息
+      // 1.0 此时只检测到一个障碍物
+      if (road_obstacle_msg_ptr_->num_objects == 1) {
+        near_obj_center_x = road_obstacle_msg_ptr_->center_x[0];
+        near_obj_center_y = road_obstacle_msg_ptr_->center_y[0];
+        near_obj_distacne = road_obstacle_msg_ptr_->distance[0];
+      }
+      // 此时同一个画面中检测到了多个障碍物
+      else {
+        int8_t near_obj_index = 0;
+        near_obj_center_x = road_obstacle_msg_ptr_->center_x[near_obj_index];
+        near_obj_center_y = road_obstacle_msg_ptr_->center_y[near_obj_index];
+        near_obj_distacne = road_obstacle_msg_ptr_->distance[near_obj_index];
+      }
+      // 计算 x 轴的偏差
+      float dir_error = frame_center_x - near_obj_center_x;
 
+    }
+    // 此时没检测到障碍物,直行
+    else {
+      LOG_IF(WARNING, 1) << "No Obstacle";
+      pub_sbus_channels_value_.publish(sbus_output_data);
+      float drive_wheel_target = const_driver_speed; 
+      float drive_wheel_current = odrive_axis1_can_parsed_msg_ptr_->speed;
+      float drive_speed_pid_out = (*bike_pid_ptr_)(
+          drive_wheel_target, drive_wheel_current, PidParams::POSITION,
+          bike_pid_ptr_->getDriveWheelSpeedPid(),
+          bike_pid_ptr_->getDriveWheelSpeedPid()->debug_);
 
-
-
-
-
-
-
-
-
+      int16_t int_speed = static_cast<int16_t>(drive_speed_pid_out);
+      CanSendReceive::WriteDataToSocketCanDeviceControlMotor(
+          socket_can_fd_,
+          OdriveMotorConfig::getSigleInstance().axis1_set_input_pos_can_id_,
+          int_speed);
+    }
+  }
 
   // 正常调试模式下控制
-  if (rc_ctrl_msg_ptr_->s1 == 3) {
+  if (rc_ctrl_msg_ptr_->s1 == 3 && rc_ctrl_msg_ptr_->s2 != 3) {
     // control faucet turn angle
     faucet_direction_ =
         -rc_ctrl_msg_ptr_->ch_x[0] +
