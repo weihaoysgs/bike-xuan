@@ -27,7 +27,8 @@ BikeXuanControl::BikeXuanControl() : nh_("~") {
 
   // init subscriber
   sub_road_obstacle_msg_ = nh_.subscribe<bike_vision::road_obstacle_msg>(
-      "/bike_obstacle_info", 10, &BikeXuanControl::SubRoadObstacleMessageCallback, this);
+      "/bike_obstacle_info", 10,
+      &BikeXuanControl::SubRoadObstacleMessageCallback, this);
   sub_can_src_msg_ = nh_.subscribe<bike_core::odrive_can_msg>(
       "topic1", 100, &BikeXuanControl::SubOdriveCanSourceMessageCB, this);
   sub_remote_ctrl_msg_ = nh_.subscribe<bike_core::remote_control_msg>(
@@ -69,33 +70,48 @@ void BikeXuanControl::tServoControl() {}
  * \brief ros timer control the back wheel drive
  */
 void BikeXuanControl::timerDriverWheelControll(const ros::TimerEvent &event) {
-  // control faucet turn angle
-  faucet_direction_ =
-      -rc_ctrl_msg_ptr_->ch_x[0] +
-      OdriveMotorConfig::getSigleInstance().servo_pwm_middle_angle_;
-  bike_core::sbus_channels_msg sbus_output_data;
-  sbus_output_data.channels_value[0] = static_cast<uint16_t>(faucet_direction_);
-  pub_sbus_channels_value_.publish(sbus_output_data);
 
-  float drive_wheel_target = rc_ctrl_msg_ptr_->ch_x[3] / 100.0;
-  float drive_wheel_current = odrive_axis1_can_parsed_msg_ptr_->speed;
-  // control back wheel
-  float drive_speed_pid_out = (*bike_pid_ptr_)(
-      drive_wheel_target, drive_wheel_current, PidParams::POSITION,
-      bike_pid_ptr_->getDriveWheelSpeedPid(),
-      bike_pid_ptr_->getDriveWheelSpeedPid()->debug_);
 
-  int16_t int_speed = static_cast<int16_t>(drive_speed_pid_out);
-  if (rc_ctrl_msg_ptr_->s1 == 3 &&
-      OdriveMotorConfig::getSigleInstance().debug_run_back_drive_wheel_) {
-    CanSendReceive::WriteDataToSocketCanDeviceControlMotor(
-        socket_can_fd_,
-        OdriveMotorConfig::getSigleInstance().axis1_set_input_pos_can_id_,
-        int_speed);
-  } else {
-    CanSendReceive::WriteDataToSocketCanDeviceControlMotor(
-        socket_can_fd_,
-        OdriveMotorConfig::getSigleInstance().axis1_set_input_pos_can_id_, 0);
+
+
+
+
+
+
+
+
+
+
+  // 正常调试模式下控制
+  if (rc_ctrl_msg_ptr_->s1 == 3) {
+    // control faucet turn angle
+    faucet_direction_ =
+        -rc_ctrl_msg_ptr_->ch_x[0] +
+        OdriveMotorConfig::getSigleInstance().servo_pwm_middle_angle_;
+    bike_core::sbus_channels_msg sbus_output_data;
+    sbus_output_data.channels_value[0] =
+        static_cast<uint16_t>(faucet_direction_);
+    pub_sbus_channels_value_.publish(sbus_output_data);
+
+    float drive_wheel_target = rc_ctrl_msg_ptr_->ch_x[3] / 100.0;
+    float drive_wheel_current = odrive_axis1_can_parsed_msg_ptr_->speed;
+    // control back wheel
+    float drive_speed_pid_out = (*bike_pid_ptr_)(
+        drive_wheel_target, drive_wheel_current, PidParams::POSITION,
+        bike_pid_ptr_->getDriveWheelSpeedPid(),
+        bike_pid_ptr_->getDriveWheelSpeedPid()->debug_);
+
+    int16_t int_speed = static_cast<int16_t>(drive_speed_pid_out);
+    if (OdriveMotorConfig::getSigleInstance().debug_run_back_drive_wheel_) {
+      CanSendReceive::WriteDataToSocketCanDeviceControlMotor(
+          socket_can_fd_,
+          OdriveMotorConfig::getSigleInstance().axis1_set_input_pos_can_id_,
+          int_speed);
+    } else {
+      CanSendReceive::WriteDataToSocketCanDeviceControlMotor(
+          socket_can_fd_,
+          OdriveMotorConfig::getSigleInstance().axis1_set_input_pos_can_id_, 0);
+    }
   }
 }
 

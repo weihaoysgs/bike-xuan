@@ -46,7 +46,7 @@ class SbusSimulateSerial : public QObject {
 
  private:
   ros::NodeHandle nh_;
-  std::array<uint16_t, 16> values_{0};
+  std::array<uint16_t, 16> values_{1700};
   ros::Subscriber sub_sbus_channels_value_;
   std::shared_ptr<QSerialPort> sbus_simulate_ser_;
 };
