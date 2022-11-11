@@ -11,7 +11,7 @@ Debug.Momentum.Wheel: 1 # Remember to open set the two parmas [true] in the real
 Debug.Back.Drive.Wheel: 1
 
 # Servo Config
-Servo.Port.Name: "/dev/ttyUSB1"
+Servo.Port.Name: "/dev/ttyUSB2"
 Servo.ID: 0
 Servo.BaudRate: 115200
 
