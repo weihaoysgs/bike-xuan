@@ -9,6 +9,7 @@ BikeXuanControl::BikeXuanControl() : nh_("~") {
       CanSendReceive::GetOneSocketCanSendInstance(can_port_name.c_str());
   LOG_IF(FATAL, !socket_can_fd_) << "Get Socket Can Instance Erros!";
 
+  road_obstacle_msg_ptr_ = std::make_shared<bike_vision::road_obstacle_msg>();
   rc_ctrl_msg_ptr_ = std::make_shared<bike_core::remote_control_msg>();
   odrive_src_can_msg_ptr_ = std::make_shared<bike_core::odrive_can_msg>();
   bike_xuan_imu_msg_ptr_ = std::make_shared<sensor_msgs::Imu>();

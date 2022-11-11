@@ -22,6 +22,7 @@ find_package(catkin REQUIRED COMPONENTS
   tf
   tf2_ros
   tf2_geometry_msgs
+  bike_vision
 )
 
 # add opencv lib

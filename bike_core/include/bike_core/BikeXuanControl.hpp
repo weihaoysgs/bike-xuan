@@ -10,6 +10,7 @@
 #include "bike_core/OdriveMotorConfig.hpp"
 #include "bike_core/ServoControl.hpp"
 #include "bike_core/sbus_channels_msg.h"
+#include "bike_vision/road_obstacle_msg.h"
 
 struct ImuPose {
   ImuPose() : yaw_(0.0), roll_(0.0), pitch_(0.0){};
@@ -137,6 +138,7 @@ private:
   std::shared_ptr<BikePid> bike_pid_ptr_;
   std::shared_ptr<bike_core::odrive_motor_feedback_msg>
       odrive_axis0_can_parsed_msg_ptr_, odrive_axis1_can_parsed_msg_ptr_;
+  std::shared_ptr<bike_vision::road_obstacle_msg> road_obstacle_msg_ptr_;
 };
 
 #endif  // BIKEXUAN_CONTROL_HPP
