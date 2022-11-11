@@ -99,6 +99,11 @@ class BikeXuanControl {
         << std::setw(7) << "Roll: :" << std::setw(5) << radian2angle(imu_ch100_pose_ptr_->roll_) << std::endl;
   };
 
+  void SubRoadObstacleMessageCallback(const bike_vision::road_obstacle_msg::ConstPtr &msg) {
+    *road_obstacle_msg_ptr_ = *msg;
+    LOG_IF(WARNING, 1) << "Hello";
+  }
+
  private:
   // thread and ros timer to control the bike blance
   void tBikeCoreControl();
@@ -127,6 +132,7 @@ private:
   ros::NodeHandle nh_;
   ros::Subscriber sub_imu_ch100_msg_, sub_momentum_wheel_parsed_msg_;
   ros::Subscriber sub_remote_ctrl_msg_, sub_can_src_msg_;
+  ros::Subscriber sub_road_obstacle_msg_;
   ros::Publisher pub_sbus_channels_value_;
   ros::Timer bike_core_control_timer_;
   ros::Timer bike_balance_timer_;

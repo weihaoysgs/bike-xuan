@@ -9,6 +9,7 @@ BikeXuanControl::BikeXuanControl() : nh_("~") {
       CanSendReceive::GetOneSocketCanSendInstance(can_port_name.c_str());
   LOG_IF(FATAL, !socket_can_fd_) << "Get Socket Can Instance Erros!";
 
+  // init member variable
   road_obstacle_msg_ptr_ = std::make_shared<bike_vision::road_obstacle_msg>();
   rc_ctrl_msg_ptr_ = std::make_shared<bike_core::remote_control_msg>();
   odrive_src_can_msg_ptr_ = std::make_shared<bike_core::odrive_can_msg>();
@@ -20,9 +21,13 @@ BikeXuanControl::BikeXuanControl() : nh_("~") {
   odrive_axis1_can_parsed_msg_ptr_ =
       std::make_shared<bike_core::odrive_motor_feedback_msg>();
 
+  // init publisher
   pub_sbus_channels_value_ =
       nh_.advertise<bike_core::sbus_channels_msg>("sbus_channel_values", 10);
 
+  // init subscriber
+  sub_road_obstacle_msg_ = nh_.subscribe<bike_vision::road_obstacle_msg>(
+      "/bike_obstacle_info", 10, &BikeXuanControl::SubRoadObstacleMessageCallback, this);
   sub_can_src_msg_ = nh_.subscribe<bike_core::odrive_can_msg>(
       "topic1", 100, &BikeXuanControl::SubOdriveCanSourceMessageCB, this);
   sub_remote_ctrl_msg_ = nh_.subscribe<bike_core::remote_control_msg>(
@@ -32,7 +37,6 @@ BikeXuanControl::BikeXuanControl() : nh_("~") {
       nh_.subscribe<bike_core::odrive_motor_feedback_msg>(
           "/can_send_receive_node/odrive_motor_parsed_data", 10,
           &BikeXuanControl::SubOdriveMotorFeedbackParsedMessageCB, this);
-
   sub_imu_ch100_msg_ = nh_.subscribe<sensor_msgs::Imu>(
       "/IMU_data", 1, &BikeXuanControl::SubIMUCH100MessageCallback, this);
 
