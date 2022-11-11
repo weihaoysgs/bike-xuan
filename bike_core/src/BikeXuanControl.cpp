@@ -215,11 +215,16 @@ void BikeXuanControl::tBikeCoreControl() {
 
     float balance_roll_anle =
         OdriveMotorConfig::getSigleInstance().imu_machine_middle_angle_;
-    ////////////////////////////////////////////////////////////////////
+    int pwm_middle_value =
+        OdriveMotorConfig::getSigleInstance().servo_pwm_middle_angle_;
+    double turn_scale = OdriveMotorConfig::getSigleInstance().bike_turn_scale_;
+    //////////////////////////////////////////////////////////////////
+
+    balance_roll_anle += (faucet_direction_ - pwm_middle_value) * turn_scale;
 
     if (count % bike_pid.getSpeedPid()->calculate_time_ == 0) {
       speed_pid_out_ =
-          bike_pid(0.0, current_speed_, PidParams::POSITION,
+          bike_pid(1.0, current_speed_, PidParams::POSITION,
                    bike_pid.getSpeedPid(), bike_pid.getSpeedPid()->debug_);
     }
 
@@ -235,7 +240,7 @@ void BikeXuanControl::tBikeCoreControl() {
                    bike_pid.getAngleVelocityPid(),
                    bike_pid.getAngleVelocityPid()->debug_);
     }
-    
+
     LOG_IF(INFO, OdriveMotorConfig::getSigleInstance().output_imu_middle_angle_)
         << "middle angle: " << roll_angle_;
     ////////////////////////////////////////////////////////////////////

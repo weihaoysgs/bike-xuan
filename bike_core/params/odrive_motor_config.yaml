@@ -1,15 +1,17 @@
 %YAML:1.0
 ---
-IMU.Machine.Middle.Angle: -0.821
+IMU.Machine.Middle.Angle: -0.851
+Output.Middle.Angle: 0
+Servo.PWM.Middle.Value: 1700
+Bike.Turn.Scale: 0.005
 Axis0.Can.ID: 0x010
 Axis1.Can.ID: 0x020
-# Remember to open set the two parmas [true] in the real system run time
-# And set the DJI [S1==3](in the middle)
-Debug.Momentum.Wheel: 1
+
+Debug.Momentum.Wheel: 1 # Remember to open set the two parmas [true] in the real system run time, and set the DJI [S1==3](in the middle)
 Debug.Back.Drive.Wheel: 1
 
 # Servo Config
-Servo.Port.Name: "/dev/ttyUSB0"
+Servo.Port.Name: "/dev/ttyUSB1"
 Servo.ID: 0
 Servo.BaudRate: 115200
 
