@@ -1,6 +1,6 @@
 %YAML:1.0
 ---
-IMU.Machine.Middle.Angle: -0.851
+IMU.Machine.Middle.Angle: -0.861
 Output.Middle.Angle: 0
 Servo.PWM.Middle.Value: 1700
 Bike.Turn.Scale: 0.005
