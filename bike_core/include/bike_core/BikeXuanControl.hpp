@@ -101,7 +101,12 @@ class BikeXuanControl {
 
   void SubRoadObstacleMessageCallback(const bike_vision::road_obstacle_msg::ConstPtr &msg) {
     *road_obstacle_msg_ptr_ = *msg;
-    LOG_IF(WARNING, 1) << "Hello";
+    LOG_IF(INFO, 0) << "num_objects: " << static_cast<uint16_t>(road_obstacle_msg_ptr_->num_objects);
+    for (int i=0; i < road_obstacle_msg_ptr_->num_objects; i++) {
+        LOG_IF(WARNING, 0) << "center_x: " << road_obstacle_msg_ptr_->center_x[i] << " "
+                           << "center_y: " << road_obstacle_msg_ptr_->center_y[i] << " "
+                           << "distance: " << road_obstacle_msg_ptr_->distance[i];
+    }
   }
 
  private:
