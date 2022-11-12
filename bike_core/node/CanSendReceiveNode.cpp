@@ -12,6 +12,7 @@ int main(int argc, char** argv) {
   InitGlog();
   ros::init(argc, argv, "can_send_receive_node");
   CanSendReceive can;
+  LOG(INFO) << "Can Start Send And Receive!!!";
   ros::spin();
   return 0;
 }
