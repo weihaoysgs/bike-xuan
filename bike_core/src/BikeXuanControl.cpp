@@ -120,7 +120,11 @@ void BikeXuanControl::timerDriverWheelControll(const ros::TimerEvent &event) {
     }
   }
 
-  // 正常调试模式下控制
+/**
+ * \brief ros timer control the back wheel drive
+ */
+void BikeXuanControl::timerDriverWheelControll(const ros::TimerEvent &event) {
+  // normal debug control
   if (rc_ctrl_msg_ptr_->s1 == 3 && rc_ctrl_msg_ptr_->s2 != 3) {
     // control faucet turn angle
     faucet_direction_ =
