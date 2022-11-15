@@ -1,0 +1,4 @@
+bike_vision/.idea/
+bike_vision/scripts/model/__pycache__/
+bike_vision/scripts/utils/__pycache__/
+bike_vision/scripts/__pycache__/
