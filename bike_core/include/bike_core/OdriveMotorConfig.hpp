@@ -28,6 +28,8 @@ class OdriveMotorConfig {
     odrv_config_file["Output.Middle.Angle"] >> output_imu_middle_angle_; 
     odrv_config_file["Servo.PWM.Middle.Value"] >> servo_pwm_middle_angle_;
     odrv_config_file["Bike.Turn.Scale"] >> bike_turn_scale_;
+    odrv_config_file["Bike.Middle.Angle.Rectify.Scale"] >> angle_rectify_scale_;
+    odrv_config_file["Middle.Angle.Rectify.Calculate.Time"] >> middle_angle_rectify_time_;
     odrv_config_file.release();
 
     axis0_send_receive_vel_position_can_id_ = get_odrv0_can_send_id(
@@ -38,6 +40,8 @@ class OdriveMotorConfig {
         get_odrv0_can_send_id(SET_IUPUT_POS, axis0_motor_config_can_id_);
     axis1_set_input_pos_can_id_ =
         get_odrv0_can_send_id(SET_IUPUT_POS, axis1_motor_config_can_id_);
+
+    config_init_success_ = true;
   }
 
   std::function<int(int, int)> get_odrv0_can_send_id =
@@ -67,6 +71,9 @@ class OdriveMotorConfig {
   std::string servo_port_name_{""}, dbus_serial_port_name_{""},
       sbus_serial_port_name_{""}, imu_serial_port_name_{""};
   int servo_port_baud_rate_;
+  double angle_rectify_scale_{0.0};
+  bool config_init_success_{false};
+  int middle_angle_rectify_time_{0};
 };
 
 #endif  // ODRIVE_MOTOR_CONFIG_HPP

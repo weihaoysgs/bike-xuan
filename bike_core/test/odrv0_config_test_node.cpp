@@ -48,5 +48,11 @@ int main(int argc, char** argv) {
   std::cout << "Bike.Tunr.Scale: "
             << OdriveMotorConfig::getSigleInstance().bike_turn_scale_
             << std::endl;
+  std::cout << "Bike.Angle.Rectify.Scale: "
+            << OdriveMotorConfig::getSigleInstance().angle_rectify_scale_
+            << std::endl;
+  std::cout << "Bike.Angle.Rectify.Calculate.Time: "
+            << OdriveMotorConfig::getSigleInstance().middle_angle_rectify_time_
+            << std::endl;
   ros::spin();
 }
