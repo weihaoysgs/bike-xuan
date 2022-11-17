@@ -274,16 +274,24 @@ void BikeXuanControl::tBikeCoreControl() {
         << "ChechSubscriberMessageTimestamp Failed!\t" <<
         []() -> std::string { return std::string("Set Motor Speed To [0.0]"); };
 
-    float target_remote_speed = rc_ctrl_msg_ptr_->ch_x[0] / 2.2;
-
-    float balance_roll_anle =
-        OdriveMotorConfig::getSigleInstance().imu_machine_middle_angle_;
     int pwm_middle_value =
         OdriveMotorConfig::getSigleInstance().servo_pwm_middle_angle_;
     double turn_scale = OdriveMotorConfig::getSigleInstance().bike_turn_scale_;
     //////////////////////////////////////////////////////////////////
-
+    float balance_roll_anle =
+        OdriveMotorConfig::getSigleInstance().imu_machine_middle_angle_;
     balance_roll_anle += (faucet_direction_ - pwm_middle_value) * turn_scale;
+
+    // dynamic config middle machine angle
+    if (OdriveMotorConfig::getSigleInstance().middle_angle_rectify_time_ != 0 &&
+        !(count % OdriveMotorConfig::getSigleInstance().middle_angle_rectify_time_)) {
+      float speed_balance_roll_angle_p =
+          OdriveMotorConfig::getSigleInstance().angle_rectify_scale_;
+      float dynamic_roll_change = current_speed_ * speed_balance_roll_angle_p;
+
+      OdriveMotorConfig::getSigleInstance().imu_machine_middle_angle_ +=
+          dynamic_roll_change;
+    }
 
     if (count % bike_pid.getSpeedPid()->calculate_time_ == 0) {
       speed_pid_out_ =
