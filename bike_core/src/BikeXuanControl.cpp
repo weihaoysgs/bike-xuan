@@ -265,6 +265,10 @@ void BikeXuanControl::tBikeCoreControl() {
   ros::Rate rate(control_rate);
 
   BikePid bike_pid;
+
+  while (!OdriveMotorConfig::getSigleInstance().config_init_success_)
+    ;
+
   unsigned int count = 0;
   while (ros::ok()) {
     count++;
