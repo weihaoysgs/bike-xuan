@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 import cv2
 import numpy as np
-from zmq import DeviceType
 import rospy
 import sys
 import message_filters
