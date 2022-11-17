@@ -1,2 +1,0 @@
-cone_barrel
-cylinder_barrel
