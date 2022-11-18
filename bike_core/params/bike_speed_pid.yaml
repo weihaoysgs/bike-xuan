@@ -1,7 +1,7 @@
 %YAML:1.0
 ---
 Pid.Name: bike_speed_pid
-Kp: -0.0021
+Kp: -0.0015
 Ki: 0.000
 Kd: 0.0000
 CalculateTime: 450
