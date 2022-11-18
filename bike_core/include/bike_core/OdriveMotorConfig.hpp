@@ -20,19 +20,23 @@ class OdriveMotorConfig {
     odrv_config_file["Debug.Back.Drive.Wheel"] >> debug_run_back_drive_wheel_;
     odrv_config_file["IMU.Machine.Middle.Angle"] >> imu_machine_middle_angle_;
     odrv_config_file["Servo.Port.Name"] >> servo_port_name_;
-    odrv_config_file["Servo.ID"] >> servo_id_;
     odrv_config_file["Servo.BaudRate"] >> servo_port_baud_rate_;
     odrv_config_file["Dbus.Serial.Port.Name"] >> dbus_serial_port_name_;
     odrv_config_file["Sbus.Serial.Port.Name"] >> sbus_serial_port_name_;
     odrv_config_file["Imu.Serial.Port.Name"] >> imu_serial_port_name_;
-    odrv_config_file["Output.Middle.Angle"] >> output_imu_middle_angle_; 
+    odrv_config_file["Output.Middle.Angle"] >> output_imu_middle_angle_;
     odrv_config_file["Servo.PWM.Middle.Value"] >> servo_pwm_middle_angle_;
     odrv_config_file["Bike.Turn.Scale"] >> bike_turn_scale_;
     odrv_config_file["Bike.Middle.Angle.Rectify.Scale"] >> angle_rectify_scale_;
-    odrv_config_file["Middle.Angle.Rectify.Calculate.Time"] >> middle_angle_rectify_time_;
+    odrv_config_file["Middle.Angle.Rectify.Calculate.Time"] >>
+        middle_angle_rectify_time_;
     odrv_config_file["Debug.Faucte.Dir"] >> debug_faucet_dir_;
-    odrv_config_file["Avoid.Obstacle.Drive.Speed"] >> avoid_obstacle_drive_speed_;
-    odrv_config_file["Tolerance.Nearest.Obstacle.Dis"] >> tolerance_nearest_obstacle_dis_;
+    odrv_config_file["Avoid.Obstacle.Drive.Speed"] >>
+        avoid_obstacle_drive_speed_;
+    odrv_config_file["Tolerance.Nearest.Obstacle.Dis"] >>
+        tolerance_nearest_obstacle_dis_;
+    odrv_config_file["Faucet.Dir.Control.Rate"] >> faucet_dir_control_rate_;
+    odrv_config_file["Faucet.Dir.Error.P"] >> faucet_dir_error_p_;
     odrv_config_file.release();
 
     axis0_send_receive_vel_position_can_id_ = get_odrv0_can_send_id(
@@ -73,7 +77,9 @@ class OdriveMotorConfig {
   double bike_turn_scale_{0.0};
   double avoid_obstacle_drive_speed_{0.0};
   double tolerance_nearest_obstacle_dis_{0.0};
-  int servo_id_{-1};
+  double faucet_dir_control_rate_{0.0};
+  double faucet_dir_error_p_{0.0};
+
   std::string servo_port_name_{""}, dbus_serial_port_name_{""},
       sbus_serial_port_name_{""}, imu_serial_port_name_{""};
   int servo_port_baud_rate_;

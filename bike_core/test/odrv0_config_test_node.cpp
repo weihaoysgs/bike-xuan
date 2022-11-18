@@ -34,8 +34,6 @@ int main(int argc, char** argv) {
   std::cout << "Servo.Port.Name: "
             << OdriveMotorConfig::getSigleInstance().servo_port_name_
             << std::endl;
-  std::cout << "Servo.ID:" << OdriveMotorConfig::getSigleInstance().servo_id_
-            << std::endl;
   std::cout << "Servo.BaudRate: "
             << OdriveMotorConfig::getSigleInstance().servo_port_baud_rate_
             << std::endl;
@@ -60,8 +58,15 @@ int main(int argc, char** argv) {
   std::cout << "Avoid.Obstacle.Drive.SPeed: "
             << OdriveMotorConfig::getSigleInstance().avoid_obstacle_drive_speed_
             << std::endl;
-  std::cout << "Tolerance.Nearest.Obstacle.Dis: "
-            << OdriveMotorConfig::getSigleInstance().tolerance_nearest_obstacle_dis_
+  std::cout
+      << "Tolerance.Nearest.Obstacle.Dis: "
+      << OdriveMotorConfig::getSigleInstance().tolerance_nearest_obstacle_dis_
+      << std::endl;
+  std::cout << "Faucet.Dir.Control.Rate: "
+            << OdriveMotorConfig::getSigleInstance().faucet_dir_control_rate_
+            << std::endl;
+  std::cout << "Faucet.Dir.Error.P: "
+            << OdriveMotorConfig::getSigleInstance().faucet_dir_error_p_
             << std::endl;
   std::cout << std::endl;
   ros::spin();
