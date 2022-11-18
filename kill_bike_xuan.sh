@@ -1,0 +1,1 @@
+../kill_bike_xuan.sh
