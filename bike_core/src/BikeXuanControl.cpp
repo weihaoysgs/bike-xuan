@@ -49,6 +49,10 @@ BikeXuanControl::BikeXuanControl() : nh_("~") {
                     1000.0),
       &BikeXuanControl::timerDriverWheelControll, this);
 
+  avoid_obstacle_drive_speed_ =
+      OdriveMotorConfig::getSigleInstance().avoid_obstacle_drive_speed_;
+  LOG(INFO) << "Avoid.Obstacle.Drive.Speed: " << avoid_obstacle_drive_speed_;
+
   std::thread t_bike_core_control =
       std::thread(&BikeXuanControl::tBikeCoreControl, this);
   t_bike_core_control.detach();
