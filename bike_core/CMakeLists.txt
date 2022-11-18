@@ -58,21 +58,7 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTOUIC ON)
 
 find_package(Qt5 COMPONENTS Widgets Core SerialPort REQUIRED)
-qt5_wrap_cpp(header_SRC include/bike_core/ImuCH100.hpp)
 
-add_executable(sub_imu_test_node
-test/sub_imu_test_node.cpp
-src/ImuCH100.cpp
-${header_SRC}
-)
-
-target_link_libraries(sub_imu_test_node
-  ${catkin_LIBRARIES}
-  Qt5::Widgets
-  Qt5::Core
-  Qt5::SerialPort
-  glog
-)
 
 # 解析遥控器数据节点
 qt5_wrap_cpp(parser_remote_data_node_header_SRC include/bike_core/RemoteControlParser.hpp)
@@ -113,18 +99,6 @@ target_link_libraries(bike_pid_test_node
   glog
 )
 
-# ServoControl test node
-add_executable(servo_control_test_node
-test/servo_control_test_node.cpp
-src/ServoControl.cpp
-)
-target_link_libraries(servo_control_test_node
-  ${catkin_LIBRARIES}
-  ${OpenCV_LIBRARIES}
-  glog
-  fsuartservo
-  cserialport
-)
 
 qt5_wrap_cpp(sbus_simulate_test_node_header_SRC include/bike_core/SbusSimulate.hpp)
 
@@ -174,7 +148,6 @@ src/CanReceiveSend.cpp
 src/BikeXuanControl.cpp
 src/RemoteControlParser.cpp
 src/BikePid.cpp
-src/ServoControl.cpp
 src/OdriveMotorConfig.cpp
 ${parser_remote_data_node_header_SRC}
 )
@@ -185,6 +158,4 @@ target_link_libraries(bike_xuan_core_control_node
   Qt5::Core
   Qt5::SerialPort
   glog
-  fsuartservo
-  cserialport
 )
