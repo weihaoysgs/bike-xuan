@@ -13,7 +13,7 @@ from params import BikeVisionParams
 
 class BikeXuanVision:
     def __init__(self) -> None:
-        self.cv_depth_img = np.zeros([256, 256, 3], dtype=np.uint8)
+        self.cv_depth_img = np.zeros([480, 640, 3], dtype=np.uint8)
         self.depth_camera_k = [570.3422047415297, 0.0, 319.5,
                                0.0, 570.3422047415297, 239.5, 0.0, 0.0, 1.0]
 
