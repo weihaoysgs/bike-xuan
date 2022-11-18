@@ -68,47 +68,95 @@ BikeXuanControl::BikeXuanControl() : nh_("~") {
   t_servo_control.detach();
 }
 
-void BikeXuanControl::tServoControl() {}
+void BikeXuanControl::tServoControl() {
+  auto output_limit = [](float value, float min, float max) -> float {
+    if (value > max)
+      return max;
+    else if (value < min)
+      return min;
+    else
+      return value;
+  };
 
-/**
- * \brief ros timer control the back wheel drive
- */
-void BikeXuanControl::timerDriverWheelControll(const ros::TimerEvent &event) {
-  const float const_driver_speed = 2.0;
+  const float tolerance_nearest_dis =
+      OdriveMotorConfig::getSigleInstance().tolerance_nearest_obstacle_dis_;
+  const float dir_error_p =
+      OdriveMotorConfig::getSigleInstance().faucet_dir_error_p_;
   const float frame_center_x = 320.0, frame_center_y = 240.0;
-  faucet_direction_ =
-      OdriveMotorConfig::getSigleInstance().servo_pwm_middle_angle_;
-  bike_core::sbus_channels_msg sbus_output_data;
-  sbus_output_data.channels_value[0] = static_cast<uint16_t>(faucet_direction_);
-  // pub_sbus_channels_value_.publish(sbus_output_data);
   float near_obj_center_x, near_obj_center_y, near_obj_distacne;
+  const uint16_t dir_control_rate =
+      OdriveMotorConfig::getSigleInstance().faucet_dir_control_rate_;
 
-  // 此时切换自动避障模式
-  if (rc_ctrl_msg_ptr_->s2 == 3) {
-    // 如果此时检测到了障碍物
-    if (road_obstacle_msg_ptr_->num_objects) {
-      // 找到最近的那个障碍物的距离和位置信息
-      // 1.0 此时只检测到一个障碍物
-      if (road_obstacle_msg_ptr_->num_objects == 1) {
-        near_obj_center_x = road_obstacle_msg_ptr_->center_x[0];
-        near_obj_center_y = road_obstacle_msg_ptr_->center_y[0];
-        near_obj_distacne = road_obstacle_msg_ptr_->distance[0];
+  bike_core::sbus_channels_msg sbus_output_data;
+  uint16_t faucet_dir_output =
+      OdriveMotorConfig::getSigleInstance().servo_pwm_middle_angle_;
+  ros::Rate rate(dir_control_rate);
+  while (ros::ok()) {
+    // 此时切换自动避障模式
+    if (rc_ctrl_msg_ptr_->s2 == 3) {
+      // 如果此时检测到了障碍物
+      if (road_obstacle_msg_ptr_->num_objects) {
+        // 找到最近的那个障碍物的距离和位置信息
+        // 1.0 此时只检测到一个障碍物
+        if (road_obstacle_msg_ptr_->num_objects == 1) {
+          near_obj_center_x = road_obstacle_msg_ptr_->center_x[0];
+          near_obj_center_y = road_obstacle_msg_ptr_->center_y[0];
+          near_obj_distacne = road_obstacle_msg_ptr_->distance[0];
+        }
+        // 此时同一个画面中检测到了多个障碍物
+        else {
+          int8_t near_obj_index = 0;
+          near_obj_center_x = road_obstacle_msg_ptr_->center_x[near_obj_index];
+          near_obj_center_y = road_obstacle_msg_ptr_->center_y[near_obj_index];
+          near_obj_distacne = road_obstacle_msg_ptr_->distance[near_obj_index];
+        }
+        if (near_obj_distacne < tolerance_nearest_dis) {
+          // 避开前面的障碍物
+          float target_faucet_dir = 1500;
+          float tar_cur_faucet_error = target_faucet_dir - faucet_direction_;
+          if (tar_cur_faucet_error > 5) {
+            faucet_dir_output += 5.0;
+          } else if (tar_cur_faucet_error < -5) {
+            faucet_dir_output -= 5.0;
+          } else {
+            faucet_dir_output = target_faucet_dir;
+          }
+          faucet_dir_output = output_limit(faucet_dir_output, 1500, 1900);
+        } else {
+          // 计算 x 轴的偏差，自行车向左拐加负，向右转为正数
+          float dir_error = frame_center_x - near_obj_center_x;
+
+          float target_faucet_dir =
+              OdriveMotorConfig::getSigleInstance().servo_pwm_middle_angle_ +
+              dir_error * dir_error_p;
+          float tar_cur_faucet_error = target_faucet_dir - faucet_direction_;
+          if (tar_cur_faucet_error > 5) {
+            faucet_dir_output += 5.0;
+          } else if (tar_cur_faucet_error < -5) {
+            faucet_dir_output -= 5.0;
+          } else {
+            faucet_dir_output = target_faucet_dir;
+          }
+          faucet_dir_output = output_limit(faucet_dir_output, 1500, 1900);
+        }
+        {
+          avoid_obstacle_drive_speed_ =
+              OdriveMotorConfig::getSigleInstance().avoid_obstacle_drive_speed_;
+        }
+
       }
-      // 此时同一个画面中检测到了多个障碍物
+      // 此时没检测到障碍物,应该缓慢的恢复到中点的位置
       else {
-        int8_t near_obj_index = 0;
-        near_obj_center_x = road_obstacle_msg_ptr_->center_x[near_obj_index];
-        near_obj_center_y = road_obstacle_msg_ptr_->center_y[near_obj_index];
-        near_obj_distacne = road_obstacle_msg_ptr_->distance[near_obj_index];
+        LOG_IF(WARNING, 1) << "No Obstacle";
       }
-      // 计算 x 轴的偏差
-      float dir_error = frame_center_x - near_obj_center_x;
 
-    }
-    // 此时没检测到障碍物,直行
-    else {
-      LOG_IF(WARNING, 1) << "No Obstacle";
-      pub_sbus_channels_value_.publish(sbus_output_data);
+      {
+        faucet_direction_ = faucet_dir_output;
+        // control the faucet dir
+        LOG_IF(WARNING, 1) << "faucet dir: " << faucet_direction_;
+        sbus_output_data.channels_value[0] = faucet_direction_;
+        if (OdriveMotorConfig::getSigleInstance().debug_faucet_dir_)
+          pub_sbus_channels_value_.publish(sbus_output_data);
       }
     }
     rate.sleep();
@@ -171,8 +219,7 @@ void BikeXuanControl::timerDriverWheelControll(const ros::TimerEvent &event) {
   else {
     CanSendReceive::WriteDataToSocketCanDeviceControlMotor(
         socket_can_fd_,
-        OdriveMotorConfig::getSigleInstance().axis1_set_input_pos_can_id_,
-        0);
+        OdriveMotorConfig::getSigleInstance().axis1_set_input_pos_can_id_, 0);
   }
 }
 
@@ -307,7 +354,8 @@ void BikeXuanControl::tBikeCoreControl() {
 
     // dynamic config middle machine angle
     if (OdriveMotorConfig::getSigleInstance().middle_angle_rectify_time_ != 0 &&
-        !(count % OdriveMotorConfig::getSigleInstance().middle_angle_rectify_time_)) {
+        !(count %
+          OdriveMotorConfig::getSigleInstance().middle_angle_rectify_time_)) {
       float speed_balance_roll_angle_p =
           OdriveMotorConfig::getSigleInstance().angle_rectify_scale_;
       float dynamic_roll_change = current_speed_ * speed_balance_roll_angle_p;
