@@ -8,7 +8,6 @@
 #include "bike_core/BikePid.hpp"
 #include "bike_core/pid_params_msg.h"
 #include "bike_core/OdriveMotorConfig.hpp"
-#include "bike_core/ServoControl.hpp"
 #include "bike_core/sbus_channels_msg.h"
 #include "bike_vision/road_obstacle_msg.h"
 
