@@ -57,6 +57,9 @@ int main(int argc, char** argv) {
   std::cout << "Debug.Faucet.Dir "
             << OdriveMotorConfig::getSigleInstance().debug_faucet_dir_
             << std::endl;
+  std::cout << "Avoid.Obstacle.Drive.SPeed: "
+            << OdriveMotorConfig::getSigleInstance().avoid_obstacle_drive_speed_
+            << std::endl;
   std::cout << std::endl;
   ros::spin();
 }
