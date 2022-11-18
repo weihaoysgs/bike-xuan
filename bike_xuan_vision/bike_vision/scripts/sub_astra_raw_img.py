@@ -82,12 +82,12 @@ class BikeXuanVision:
         for i, c in list(enumerate(top_label)):
             box = top_boxes[i]
             top, left, bottom, right = box
-            middle_y = int((top + bottom) / 2)
-            middle_x = int((right + left) / 2)
             top = max(0, np.floor(top).astype('int32'))
             left = max(0, np.floor(left).astype('int32'))
             bottom = min(cv_img.shape[0], np.floor(bottom).astype('int32'))
             right = min(cv_img.shape[1], np.floor(right).astype('int32'))
+            middle_y = int((top + bottom) / 2)
+            middle_x = int((right + left) / 2)
             real_z = self.cv_depth_img[middle_y, middle_x] * 0.001
             # prepare ros message
             road_obstacle_info.center_x[i] = middle_x
