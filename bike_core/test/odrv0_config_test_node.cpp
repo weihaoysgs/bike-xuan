@@ -60,6 +60,9 @@ int main(int argc, char** argv) {
   std::cout << "Avoid.Obstacle.Drive.SPeed: "
             << OdriveMotorConfig::getSigleInstance().avoid_obstacle_drive_speed_
             << std::endl;
+  std::cout << "Tolerance.Nearest.Obstacle.Dis: "
+            << OdriveMotorConfig::getSigleInstance().tolerance_nearest_obstacle_dis_
+            << std::endl;
   std::cout << std::endl;
   ros::spin();
 }

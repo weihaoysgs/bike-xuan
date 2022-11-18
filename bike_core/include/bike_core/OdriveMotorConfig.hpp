@@ -32,6 +32,7 @@ class OdriveMotorConfig {
     odrv_config_file["Middle.Angle.Rectify.Calculate.Time"] >> middle_angle_rectify_time_;
     odrv_config_file["Debug.Faucte.Dir"] >> debug_faucet_dir_;
     odrv_config_file["Avoid.Obstacle.Drive.Speed"] >> avoid_obstacle_drive_speed_;
+    odrv_config_file["Tolerance.Nearest.Obstacle.Dis"] >> tolerance_nearest_obstacle_dis_;
     odrv_config_file.release();
 
     axis0_send_receive_vel_position_can_id_ = get_odrv0_can_send_id(
@@ -71,6 +72,7 @@ class OdriveMotorConfig {
   double imu_machine_middle_angle_{0.0};
   double bike_turn_scale_{0.0};
   double avoid_obstacle_drive_speed_{0.0};
+  double tolerance_nearest_obstacle_dis_{0.0};
   int servo_id_{-1};
   std::string servo_port_name_{""}, dbus_serial_port_name_{""},
       sbus_serial_port_name_{""}, imu_serial_port_name_{""};
