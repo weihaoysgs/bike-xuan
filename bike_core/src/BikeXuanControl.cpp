@@ -109,27 +109,35 @@ void BikeXuanControl::timerDriverWheelControll(const ros::TimerEvent &event) {
     else {
       LOG_IF(WARNING, 1) << "No Obstacle";
       pub_sbus_channels_value_.publish(sbus_output_data);
-      float drive_wheel_target = const_driver_speed; 
-      float drive_wheel_current = odrive_axis1_can_parsed_msg_ptr_->speed;
-      float drive_speed_pid_out = (*bike_pid_ptr_)(
-          drive_wheel_target, drive_wheel_current, PidParams::POSITION,
-          bike_pid_ptr_->getDriveWheelSpeedPid(),
-          bike_pid_ptr_->getDriveWheelSpeedPid()->debug_);
-
-      int16_t int_speed = static_cast<int16_t>(drive_speed_pid_out);
-      CanSendReceive::WriteDataToSocketCanDeviceControlMotor(
-          socket_can_fd_,
-          OdriveMotorConfig::getSigleInstance().axis1_set_input_pos_can_id_,
-          int_speed);
+      }
     }
+    rate.sleep();
   }
+}
 
 /**
  * \brief ros timer control the back wheel drive
  */
 void BikeXuanControl::timerDriverWheelControll(const ros::TimerEvent &event) {
+  // auto avoid obstacle control
+  if (rc_ctrl_msg_ptr_->s2 == 3 && rc_ctrl_msg_ptr_->s1 != 3) {
+    float drive_wheel_current = odrive_axis1_can_parsed_msg_ptr_->speed;
+
+    float drive_speed_pid_out = (*bike_pid_ptr_)(
+        avoid_obstacle_drive_speed_, drive_wheel_current, PidParams::POSITION,
+        bike_pid_ptr_->getDriveWheelSpeedPid(),
+        bike_pid_ptr_->getDriveWheelSpeedPid()->debug_);
+
+    int16_t int_speed = static_cast<int16_t>(drive_speed_pid_out);
+
+    CanSendReceive::WriteDataToSocketCanDeviceControlMotor(
+        socket_can_fd_,
+        OdriveMotorConfig::getSigleInstance().axis1_set_input_pos_can_id_,
+        int_speed);
+  }
+
   // normal debug control
-  if (rc_ctrl_msg_ptr_->s1 == 3 && rc_ctrl_msg_ptr_->s2 != 3) {
+  else if (rc_ctrl_msg_ptr_->s1 == 3 && rc_ctrl_msg_ptr_->s2 != 3) {
     // control faucet turn angle
     faucet_direction_ =
         -rc_ctrl_msg_ptr_->ch_x[0] +
@@ -158,6 +166,13 @@ void BikeXuanControl::timerDriverWheelControll(const ros::TimerEvent &event) {
           socket_can_fd_,
           OdriveMotorConfig::getSigleInstance().axis1_set_input_pos_can_id_, 0);
     }
+  }
+
+  else {
+    CanSendReceive::WriteDataToSocketCanDeviceControlMotor(
+        socket_can_fd_,
+        OdriveMotorConfig::getSigleInstance().axis1_set_input_pos_can_id_,
+        0);
   }
 }
 
