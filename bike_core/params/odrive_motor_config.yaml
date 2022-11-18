@@ -1,19 +1,32 @@
 %YAML:1.0
 ---
-IMU.Machine.Middle.Angle: -0.951
+IMU.Machine.Middle.Angle: 2.851
+Middle.Angle.Tolerance.Change.ABSValue: 1.0
 Output.Middle.Angle: 0
 Servo.PWM.Middle.Value: 1700
 Bike.Turn.Scale: 0.005
+Bike.Middle.Angle.Rectify.Scale: 0.000005
+Middle.Angle.Rectify.Calculate.Time: 100
+
 Axis0.Can.ID: 0x010
 Axis1.Can.ID: 0x020
 
-Debug.Momentum.Wheel: 1 # Remember to open set the two parmas [true] in the real system run time, and set the DJI [S1==3](in the middle)
+Debug.Faucte.Dir: 1
+Debug.Momentum.Wheel: 0
 Debug.Back.Drive.Wheel: 1
 
-# Servo Config
-Servo.Port.Name: "/dev/ttyUSB2"
-Servo.ID: 0
-Servo.BaudRate: 115200
 
-Dbus.Serial.Port.Name: "/dev/dbus_serial"
-Imu.Serial.Port.Name: "/dev/imu_serial"
+Servo.Port.Name: "/dev/dbus_serial"
+Servo.ID: 0
+
+Dbus.Serial.Port.Name: "/dev/sbus_serial" 
+Imu.Serial.Port.Name: "/dev/imu_serial" # nousing
+
+
+# avoid obstacle config params
+Tolerance.Nearest.Obstacle.Dis: 0.4
+Avoid.Obstacle.Drive.Speed: 2.5
+Faucet.Dir.Control.Rate: 5
+Faucet.Dir.Error.P: 1.0
+Faucet.Dir.Output.ABS.Limit: 3
+
