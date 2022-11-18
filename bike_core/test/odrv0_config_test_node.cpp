@@ -54,5 +54,9 @@ int main(int argc, char** argv) {
   std::cout << "Bike.Angle.Rectify.Calculate.Time: "
             << OdriveMotorConfig::getSigleInstance().middle_angle_rectify_time_
             << std::endl;
+  std::cout << "Debug.Faucet.Dir "
+            << OdriveMotorConfig::getSigleInstance().debug_faucet_dir_
+            << std::endl;
+  std::cout << std::endl;
   ros::spin();
 }

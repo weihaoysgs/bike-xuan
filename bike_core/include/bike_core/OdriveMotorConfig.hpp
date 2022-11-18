@@ -30,6 +30,7 @@ class OdriveMotorConfig {
     odrv_config_file["Bike.Turn.Scale"] >> bike_turn_scale_;
     odrv_config_file["Bike.Middle.Angle.Rectify.Scale"] >> angle_rectify_scale_;
     odrv_config_file["Middle.Angle.Rectify.Calculate.Time"] >> middle_angle_rectify_time_;
+    odrv_config_file["Debug.Faucte.Dir"] >> debug_faucet_dir_;
     odrv_config_file.release();
 
     axis0_send_receive_vel_position_can_id_ = get_odrv0_can_send_id(
@@ -63,6 +64,7 @@ class OdriveMotorConfig {
   const static int REBOOT = 0x00C;
   const static int GET_ENCODER_ESTIMATES = 0x009;
   bool debug_run_momentum_wheel_{true}, debug_run_back_drive_wheel_{true};
+  bool debug_faucet_dir_{false};
   bool output_imu_middle_angle_{false};
   int servo_pwm_middle_angle_{1700};
   double imu_machine_middle_angle_{0.0};
