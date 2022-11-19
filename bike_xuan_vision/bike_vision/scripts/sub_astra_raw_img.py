@@ -5,7 +5,7 @@ import numpy as np
 import rospy
 import sys
 import message_filters
-from sensor_msgs.msg import Image
+from sensor_msgs.msg import Image, CompressedImage
 from bike_vision.msg import road_obstacle_msg
 from vino_infer import YoloXNanoOpenVINO
 from params import BikeVisionParams
@@ -78,6 +78,7 @@ class BikeXuanVision:
 
         if top_label is None or top_conf is None or top_boxes is None:
             self.pub_obstacle_info.publish(road_obstacle_info)
+            self.publish_detect_result_img(cv_img)
 
         for i, c in list(enumerate(top_label)):
             box = top_boxes[i]
@@ -95,9 +96,20 @@ class BikeXuanVision:
             road_obstacle_info.distance[i] = abs(real_z)
             road_obstacle_info.num_objects += 1
         self.pub_obstacle_info.publish(road_obstacle_info)
+        self.publish_detect_result_img(cv_img)
+
+    def publish_detect_result_img(self, cv_result_img):
+        msg = CompressedImage()
+        msg.header.stamp = rospy.Time.now()
+        msg.format = "jpeg"
+        msg.data = np.array(cv2.imencode('.jpg', cv_result_img)[1]).tostring()
+        # Publish new image
+        self.pub_result_img.publish(msg)
 
     def cv2_to_img_msg(self, cv_image):
         img_msg = Image()
+        img_msg.header.frame_id = "camera"
+        img_msg.header.stamp = rospy.Time.now()
         img_msg.height = cv_image.shape[0]
         img_msg.width = cv_image.shape[1]
         img_msg.encoding = "bgr8"
@@ -111,14 +123,14 @@ class BikeXuanVision:
         self.cv_depth_img = self.depth_img_msg_to_cv2(depth_image_msg)
 
     def init_subscriber(self):
-        # color_raw_img = message_filters.Subscriber(
-        #     "/camera/rgb/image_raw", Image)
-        # depth_img = message_filters.Subscriber(
-        #     "/camera/depth/image_raw", Image)
-        # img_message_fileter = message_filters.ApproximateTimeSynchronizer(
-        #     [color_raw_img, depth_img], 1, 1, allow_headerless=True)
-        # img_message_fileter.registerCallback(
-        #     self.sub_astra_color_depth_img_callback)
+        """ color_raw_img = message_filters.Subscriber(
+            "/camera/rgb/image_raw", Image)
+        depth_img = message_filters.Subscriber(
+            "/camera/depth/image_raw", Image)
+        img_message_fileter = message_filters.ApproximateTimeSynchronizer(
+            [color_raw_img, depth_img], 1, 1, allow_headerless=True)
+        img_message_fileter.registerCallback(
+            self.sub_astra_color_depth_img_callback) """
         sub_color_image = rospy.Subscriber(
             "/camera/rgb/image_raw", Image, self.sub_astra_color_depth_img_callback)
         sub_depth_image = rospy.Subscriber(
@@ -128,6 +140,8 @@ class BikeXuanVision:
     def init_publisher(self):
         self.pub_obstacle_info = rospy.Publisher(
             "bike_obstacle_info", road_obstacle_msg, queue_size=10)
+        self.pub_result_img = rospy.Publisher(
+            "detect_result_img", CompressedImage, queue_size=2)
 
 
 if __name__ == "__main__":
