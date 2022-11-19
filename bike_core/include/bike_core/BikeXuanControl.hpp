@@ -30,6 +30,8 @@ class BikeXuanControl {
   // Check the subscriber message timestamp
   const bool ChechSubscriberMessageTimestamp() const;
 
+  int FindNearestObstacleIndex(const bike_vision::road_obstacle_msg &msg) const;
+  
   // Calculate angle vel speed pid
   void AngleVelocityPidControl();
 

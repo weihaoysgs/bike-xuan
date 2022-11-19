@@ -68,6 +68,19 @@ BikeXuanControl::BikeXuanControl() : nh_("~") {
   t_servo_control.detach();
 }
 
+int BikeXuanControl::FindNearestObstacleIndex(const bike_vision::road_obstacle_msg &msg) const
+{
+  float temp_value = msg.distance[0];
+  int temp_index = 0;
+  for (int i=1; i<msg.distance.size(); i++) {
+    if (msg.distance[i] < temp_value && msg.distance[i] != 0.0) {
+      temp_value = msg.distance[i];
+      temp_index = i;
+    }
+  }
+  return temp_index;
+}
+
 void BikeXuanControl::tServoControl() {
   auto output_limit = [](float value, float min, float max) -> float {
     if (value > max)
