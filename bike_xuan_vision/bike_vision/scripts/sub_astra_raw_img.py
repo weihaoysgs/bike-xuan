@@ -67,8 +67,8 @@ class BikeXuanVision:
             top_label, top_conf, top_boxes, cv_img)
         self.publish_detect_result_to_ros(
             result_img, top_label, top_conf, top_boxes)
-        cv2.imshow("result", result_img)
-        cv2.imshow("depth", self.cv_depth_img)
+        # cv2.imshow("result", result_img)
+        # cv2.imshow("depth", self.cv_depth_img)
         cv2.waitKey(1)
 
     def publish_detect_result_to_ros(self, cv_img, top_label, top_conf, top_boxes):
@@ -90,6 +90,8 @@ class BikeXuanVision:
             middle_y = int((top + bottom) / 2)
             middle_x = int((right + left) / 2)
             real_z = self.cv_depth_img[middle_y, middle_x] * 0.001
+            cv2.putText(cv_img, "dis:" + str(real_z), org=(middle_x, middle_y), fontFace=cv2.FONT_HERSHEY_SIMPLEX, fontScale=0.8,
+                            color=(0, 255, 255), thickness=2)
             # prepare ros message
             road_obstacle_info.center_x[i] = middle_x
             road_obstacle_info.center_y[i] = middle_y

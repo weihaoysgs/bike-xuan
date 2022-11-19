@@ -58,9 +58,9 @@ class YoloXNanoOpenVINO(object):
                 middle_x = int((right + left) / 2)
                 middle_y = int((top + bottom) / 2)
                 label = '{} {:.2f}'.format(predicted_class, score)
-                cv2.rectangle(cv_image, (left, top), (right, bottom), color=(255, 255, 0), thickness=3)
-                cv2.putText(cv_image, str(label), org=(left, top), fontFace=cv2.FONT_HERSHEY_SIMPLEX, fontScale=1,
-                            color=(0, 0, 255), thickness=3)
+                cv2.rectangle(cv_image, (left, top), (right, bottom), color=(255, 255, 0), thickness=2)
+                cv2.putText(cv_image, str(label), org=(left, top), fontFace=cv2.FONT_HERSHEY_SIMPLEX, fontScale=0.8,
+                            color=(0, 0, 255), thickness=2)
                 cv2.circle(cv_image, (middle_x, middle_y), 6, color=(0, 255, 255), thickness=-1)
             return cv_image
 
