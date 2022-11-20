@@ -12,7 +12,7 @@ Axis0.Can.ID: 0x010
 Axis1.Can.ID: 0x020
 
 Debug.Faucte.Dir: 1
-Debug.Momentum.Wheel: 0
+Debug.Momentum.Wheel: 1
 Debug.Back.Drive.Wheel: 1
 
 
@@ -24,9 +24,9 @@ Imu.Serial.Port.Name: "/dev/imu_serial" # nousing
 
 
 # avoid obstacle config params
-Tolerance.Nearest.Obstacle.Dis: 0.4
-Avoid.Obstacle.Drive.Speed: 2.5
-Faucet.Dir.Control.Rate: 5
+Tolerance.Nearest.Obstacle.Dis: 1.7
+Avoid.Obstacle.Drive.Speed: 2.1
+Faucet.Dir.Control.Rate: 20
 Faucet.Dir.Error.P: 1.0
 Faucet.Dir.Output.ABS.Limit: 3
 

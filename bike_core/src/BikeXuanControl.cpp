@@ -90,52 +90,72 @@ void BikeXuanControl::tServoControl() {
     else
       return value;
   };
-
+  const double go_stright_dis = 4.0;
   const float tolerance_nearest_dis =
       OdriveMotorConfig::getSigleInstance().tolerance_nearest_obstacle_dis_;
   const float dir_error_p =
       OdriveMotorConfig::getSigleInstance().faucet_dir_error_p_;
   const float frame_center_x = 320.0, frame_center_y = 240.0;
-  float near_obj_center_x, near_obj_center_y, near_obj_distacne;
+  float near_obj_center_x, near_obj_center_y, near_obj_distacne, last_nearest_obstacle_dis;
   const uint16_t dir_control_rate =
       OdriveMotorConfig::getSigleInstance().faucet_dir_control_rate_;
+  float no_obstacle_time_pwm_value;
+  double distance_changed_value = 0.0;
 
   bike_core::sbus_channels_msg sbus_output_data;
   uint16_t faucet_dir_output =
       OdriveMotorConfig::getSigleInstance().servo_pwm_middle_angle_;
   ros::Rate rate(dir_control_rate);
+  bool flag_turn_left1_or_right0{true};
+  float turn_right_pwm_value = 1560, turn_left_pwm_value = 1840;
+  // 如果最近距离突然发生了剧烈的变化，则说明有一个障碍物消失了
   while (ros::ok()) {
     // 此时切换自动避障模式
     if (rc_ctrl_msg_ptr_->s2 == 3) {
       // 如果此时检测到了障碍物
       if (road_obstacle_msg_ptr_->num_objects) {
-        // 找到最近的那个障碍物的距离和位置信息
-        // 1.0 此时只检测到一个障碍物
-        if (road_obstacle_msg_ptr_->num_objects == 1) {
-          near_obj_center_x = road_obstacle_msg_ptr_->center_x[0];
-          near_obj_center_y = road_obstacle_msg_ptr_->center_y[0];
-          near_obj_distacne = road_obstacle_msg_ptr_->distance[0];
+        // 找到距离最近的那一个
+        int near_obj_index = FindNearestObstacleIndex(*road_obstacle_msg_ptr_);
+        near_obj_center_x = road_obstacle_msg_ptr_->center_x[near_obj_index];
+        near_obj_center_y = road_obstacle_msg_ptr_->center_y[near_obj_index];
+        near_obj_distacne = road_obstacle_msg_ptr_->distance[near_obj_index];
+        if (near_obj_distacne == 0) 
+        {
+          near_obj_distacne = last_nearest_obstacle_dis;
+          LOG(INFO) << "near_obj_distacne==0";
         }
-        // 此时同一个画面中检测到了多个障碍物
-        else {
-          int8_t near_obj_index = 0;
-          near_obj_center_x = road_obstacle_msg_ptr_->center_x[near_obj_index];
-          near_obj_center_y = road_obstacle_msg_ptr_->center_y[near_obj_index];
-          near_obj_distacne = road_obstacle_msg_ptr_->distance[near_obj_index];
+        distance_changed_value = last_nearest_obstacle_dis - near_obj_distacne;
+        last_nearest_obstacle_dis = near_obj_distacne;
+        if (distance_changed_value < -3.0)
+        {
+          LOG_IF(INFO, distance_changed_value > 3) << "distance_changed_value : " << distance_changed_value;
+          flag_turn_left1_or_right0 = !flag_turn_left1_or_right0;
         }
+        LOG_IF(INFO, 1) << "distance_changed_value : " << distance_changed_value;
         if (near_obj_distacne < tolerance_nearest_dis) {
+          
           // 避开前面的障碍物
-          float target_faucet_dir = 1500;
+          float target_faucet_dir;
+          if (flag_turn_left1_or_right0 == true)
+          {
+            target_faucet_dir = turn_left_pwm_value;
+          }
+          else{
+            target_faucet_dir = turn_right_pwm_value;
+          }
+          
           float tar_cur_faucet_error = target_faucet_dir - faucet_direction_;
-          if (tar_cur_faucet_error > 5) {
-            faucet_dir_output += 5.0;
-          } else if (tar_cur_faucet_error < -5) {
-            faucet_dir_output -= 5.0;
+          if (tar_cur_faucet_error > 4) {
+            faucet_dir_output += 3.0;
+          } else if (tar_cur_faucet_error < -4) {
+            faucet_dir_output -= 3.0;
           } else {
             faucet_dir_output = target_faucet_dir;
           }
           faucet_dir_output = output_limit(faucet_dir_output, 1500, 1900);
-        } else {
+          LOG_IF(INFO, 1) << "小于指定据距离，在拐弯:" << faucet_dir_output;
+        } else if ( near_obj_distacne < go_stright_dis && 
+                    near_obj_distacne > tolerance_nearest_dis) {
           // 计算 x 轴的偏差，自行车向左拐加负，向右转为正数
           float dir_error = frame_center_x - near_obj_center_x;
 
@@ -143,30 +163,51 @@ void BikeXuanControl::tServoControl() {
               OdriveMotorConfig::getSigleInstance().servo_pwm_middle_angle_ +
               dir_error * dir_error_p;
           float tar_cur_faucet_error = target_faucet_dir - faucet_direction_;
-          if (tar_cur_faucet_error > 5) {
-            faucet_dir_output += 5.0;
-          } else if (tar_cur_faucet_error < -5) {
-            faucet_dir_output -= 5.0;
+          if (tar_cur_faucet_error > 4) {
+            faucet_dir_output += 3.0;
+          } else if (tar_cur_faucet_error < -4) {
+            faucet_dir_output -= 3.0;
           } else {
             faucet_dir_output = target_faucet_dir;
           }
           faucet_dir_output = output_limit(faucet_dir_output, 1500, 1900);
+          LOG_IF(INFO, 1) << "和障碍物保持同一条直线:" << faucet_dir_output;
         }
+        
         {
           avoid_obstacle_drive_speed_ =
               OdriveMotorConfig::getSigleInstance().avoid_obstacle_drive_speed_;
+          no_obstacle_time_pwm_value = faucet_dir_output;
         }
 
       }
-      // 此时没检测到障碍物,应该缓慢的恢复到中点的位置
+      // 此时没检测到障碍物,应该缓慢的恢复到丢失障碍物的相反方向的位置
       else {
-        LOG_IF(WARNING, 1) << "No Obstacle";
+        float middle_angle =
+            OdriveMotorConfig::getSigleInstance().servo_pwm_middle_angle_;
+        float target_faucet_dir = middle_angle;
+        if (no_obstacle_time_pwm_value < middle_angle) {
+          target_faucet_dir = middle_angle + 100;
+        } else if (no_obstacle_time_pwm_value > middle_angle) {
+          target_faucet_dir = middle_angle - 100;
+        }
+
+        float tar_cur_faucet_error = target_faucet_dir - faucet_direction_;
+        if (tar_cur_faucet_error > 4) {
+          faucet_dir_output += 3.0;
+        } else if (tar_cur_faucet_error < -4) {
+          faucet_dir_output -= 3.0;
+        } else {
+          faucet_dir_output = target_faucet_dir;
+        }
+        faucet_dir_output = output_limit(faucet_dir_output, 1500, 1900);
+        LOG_IF(WARNING, 1) << "没有障碍物，和上次的航向相反";
       }
 
       {
         faucet_direction_ = faucet_dir_output;
         // control the faucet dir
-        LOG_IF(WARNING, 1) << "faucet dir: " << faucet_direction_;
+        LOG_IF(WARNING, 0) << "faucet dir: " << faucet_direction_;
         sbus_output_data.channels_value[0] = faucet_direction_;
         if (OdriveMotorConfig::getSigleInstance().debug_faucet_dir_)
           pub_sbus_channels_value_.publish(sbus_output_data);
@@ -181,7 +222,8 @@ void BikeXuanControl::tServoControl() {
  */
 void BikeXuanControl::timerDriverWheelControll(const ros::TimerEvent &event) {
   // auto avoid obstacle control
-  if (rc_ctrl_msg_ptr_->s2 == 3 && rc_ctrl_msg_ptr_->s1 != 3) {
+  if ((rc_ctrl_msg_ptr_->s2 == 3 && rc_ctrl_msg_ptr_->s1 != 3) ||
+      (rc_ctrl_msg_ptr_->s2 == 3 && rc_ctrl_msg_ptr_->s1 == 3)) {
     float drive_wheel_current = odrive_axis1_can_parsed_msg_ptr_->speed;
 
     float drive_speed_pid_out = (*bike_pid_ptr_)(
