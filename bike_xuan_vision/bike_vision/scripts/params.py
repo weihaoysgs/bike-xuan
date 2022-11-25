@@ -10,3 +10,12 @@ class BikeVisionParams(object):
     image_std = np.array([0.229, 0.224, 0.225])
     image_mean = np.array([0.485, 0.456, 0.406])
     class_names = ["obstacle", "obstacle"]
+    obstacle_points_3d = np.loadtxt("/home/hll/code_space/bike_ws/src/bike_xuan_vision/bike_vision/params/obstacle_rect.txt")
+    astra_camera_k = np.loadtxt("/home/hll/code_space/bike_ws/src/bike_xuan_vision/bike_vision/params/camera_k.txt")
+    astra_camera_d = np.loadtxt("/home/hll/code_space/bike_ws/src/bike_xuan_vision/bike_vision/params/dist_matrix.txt")
+
+
+if __name__ == "__main__":
+    print(BikeVisionParams.astra_camera_k)
+    print(BikeVisionParams.astra_camera_d)
+    print(BikeVisionParams.obstacle_points_3d)
