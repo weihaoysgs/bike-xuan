@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 import cv2
 import numpy as np
+from bike_yolo import YOLO
 import rospy
 import sys
 import message_filters
@@ -14,9 +15,10 @@ from bike_utils.pnp_solve_dis import solve_pnp_distance
 class BikeXuanVision:
     def __init__(self) -> None:
         self.cv_depth_img = np.zeros([480, 640, 3], dtype=np.uint8)
-        self.depth_camera_k = [570.3422047415297, 0.0, 319.5,
-                               0.0, 570.3422047415297, 239.5, 0.0, 0.0, 1.0]
-
+        self.bike_torch_yolo = YOLO()
+        self.show_detect_result_img = BikeVisionParams.show_detect_result_img
+        self.show_astra_depth_img = BikeVisionParams.show_astra_depth_img
+        self.use_torch_pth_model = BikeVisionParams.use_torch_pth_model
         self.yolox_vino = YoloXNanoOpenVINO(BikeVisionParams.open_vino_model_path,
                                             BikeVisionParams.image_mean,
                                             BikeVisionParams.image_std,
@@ -59,16 +61,27 @@ class BikeXuanVision:
         return depth_cv_img
 
     def sub_astra_color_depth_img_callback(self, color_image_msg):
-        cv_img = cv2.cvtColor(self.img_msg_to_cv2(
-            color_image_msg), cv2.COLOR_RGB2BGR)
-        top_label, top_conf, top_boxes = self.yolox_vino.infer_vino_yolo_model(
-            cv_img)
-        result_img = self.yolox_vino.draw_yolo_decoder_result(
-            top_label, top_conf, top_boxes, cv_img)
+        top_label, top_conf, top_boxes = None, None, None
+        if self.use_torch_pth_model:
+            cv_img = cv2.cvtColor(self.img_msg_to_cv2(
+                color_image_msg), cv2.COLOR_RGB2BGR)
+            top_label, top_conf, top_boxes = self.bike_torch_yolo.detect_image(cv_img)
+            result_img = self.bike_torch_yolo.draw_yolo_decoder_result(top_label, top_conf, top_boxes, cv_img)
+        else:
+            cv_img = cv2.cvtColor(self.img_msg_to_cv2(
+                color_image_msg), cv2.COLOR_RGB2BGR)
+            top_label, top_conf, top_boxes = self.yolox_vino.infer_vino_yolo_model(
+                cv_img)
+            result_img = self.yolox_vino.draw_yolo_decoder_result(
+                top_label, top_conf, top_boxes, cv_img)
+
         self.publish_detect_result_to_ros(
             result_img, top_label, top_conf, top_boxes)
-        # cv2.imshow("result", result_img)
-        # cv2.imshow("depth", self.cv_depth_img)
+
+        if self.show_astra_depth_img:
+            cv2.imshow("depth", self.cv_depth_img)
+        if self.show_detect_result_img:
+            cv2.imshow("result", result_img)
         cv2.waitKey(1)
 
     def publish_detect_result_to_ros(self, cv_img, top_label, top_conf, top_boxes):

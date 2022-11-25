@@ -2,6 +2,9 @@ import numpy as np
 
 
 class BikeVisionParams(object):
+    show_detect_result_img = True
+    show_astra_depth_img = False
+    use_torch_pth_model = True
     open_vino_model_path = "/home/hll/code_space/bike_ws/src/bike_xuan_vision/bike_vision/scripts/vino_export/yolox_nano.xml"
     net_input_img_size = (416, 416)
     num_classes = 2
