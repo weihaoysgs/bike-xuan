@@ -9,7 +9,7 @@ from sensor_msgs.msg import Image, CompressedImage
 from bike_vision.msg import road_obstacle_msg
 from vino_infer import YoloXNanoOpenVINO
 from params import BikeVisionParams
-
+from bike_utils.pnp_solve_dis import solve_pnp_distance
 
 class BikeXuanVision:
     def __init__(self) -> None:
@@ -89,8 +89,13 @@ class BikeXuanVision:
             right = min(cv_img.shape[1], np.floor(right).astype('int32'))
             middle_y = int((top + bottom) / 2)
             middle_x = int((right + left) / 2)
-            real_z = self.cv_depth_img[middle_y, middle_x] * 0.001
-            cv2.putText(cv_img, "dis:" + str(real_z), org=(middle_x, middle_y), fontFace=cv2.FONT_HERSHEY_SIMPLEX, fontScale=0.8,
+            # real_z = self.cv_depth_img[middle_y, middle_x] * 0.001
+            rect_obstacle = np.array([top, left, bottom, right], dtype=np.float32)
+            real_z = solve_pnp_distance(rect_obstacle, BikeVisionParams.obstacle_points_3d,
+                                        BikeVisionParams.astra_camera_k, BikeVisionParams.astra_camera_d)
+
+            cv2.putText(cv_img, "dis:" + str(np.around(real_z, 3)), org=(middle_x, middle_y), 
+                            fontFace=cv2.FONT_HERSHEY_SIMPLEX, fontScale=0.8,
                             color=(0, 255, 255), thickness=2)
             # prepare ros message
             road_obstacle_info.center_x[i] = middle_x
