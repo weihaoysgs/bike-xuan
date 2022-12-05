@@ -96,6 +96,9 @@ class BikeXuanVision:
         for i, c in list(enumerate(top_label)):
             box = top_boxes[i]
             top, left, bottom, right = box
+            rect_obstacle = np.array([top, left, bottom, right], dtype=np.float32)
+            real_z = solve_pnp_distance(rect_obstacle, BikeVisionParams.obstacle_points_3d,
+                                        BikeVisionParams.astra_camera_k, BikeVisionParams.astra_camera_d)
             top = max(0, np.floor(top).astype('int32'))
             left = max(0, np.floor(left).astype('int32'))
             bottom = min(cv_img.shape[0], np.floor(bottom).astype('int32'))
@@ -103,9 +106,6 @@ class BikeXuanVision:
             middle_y = int((top + bottom) / 2)
             middle_x = int((right + left) / 2)
             # real_z = self.cv_depth_img[middle_y, middle_x] * 0.001
-            rect_obstacle = np.array([top, left, bottom, right], dtype=np.float32)
-            real_z = solve_pnp_distance(rect_obstacle, BikeVisionParams.obstacle_points_3d,
-                                        BikeVisionParams.astra_camera_k, BikeVisionParams.astra_camera_d)
 
             cv2.putText(cv_img, "dis:" + str(np.around(real_z, 3)), org=(middle_x, middle_y), 
                             fontFace=cv2.FONT_HERSHEY_SIMPLEX, fontScale=0.8,

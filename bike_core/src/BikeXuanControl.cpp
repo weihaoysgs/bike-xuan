@@ -108,13 +108,17 @@ void BikeXuanControl::tServoControl() {
   ros::Rate rate(dir_control_rate);
   bool flag_turn_left1_or_right0{true};
   float turn_right_pwm_value = 1560, turn_left_pwm_value = 1840;
-  // 如果最近距离突然发生了剧烈的变化，则说明有一个障碍物消失了
+  bool start_timer{false};
+  float change_dir_time_period = 3.0; // s
+  uint32_t period_changle_dir_times = static_cast<uint32_t>(change_dir_time_period / (1.0 / dir_control_rate));
+  LOG(INFO) << "period_changle_dir_times: " << period_changle_dir_times;
+  
   while (ros::ok()) {
-    // 此时切换自动避障模式
+    
     if (rc_ctrl_msg_ptr_->s2 == 3) {
-      // 如果此时检测到了障碍物
+      
       if (road_obstacle_msg_ptr_->num_objects) {
-        // 找到距离最近的那一个
+        // find the nearest obstacle
         int near_obj_index = FindNearestObstacleIndex(*road_obstacle_msg_ptr_);
         near_obj_center_x = road_obstacle_msg_ptr_->center_x[near_obj_index];
         near_obj_center_y = road_obstacle_msg_ptr_->center_y[near_obj_index];
@@ -126,15 +130,31 @@ void BikeXuanControl::tServoControl() {
         }
         distance_changed_value = last_nearest_obstacle_dis - near_obj_distacne;
         last_nearest_obstacle_dis = near_obj_distacne;
-        if (distance_changed_value < -3.0)
+        if (distance_changed_value < -1.2)
         {
-          LOG_IF(INFO, distance_changed_value > 3) << "distance_changed_value : " << distance_changed_value;
+          LOG(INFO) << "distance_changed_value : " << distance_changed_value;
           flag_turn_left1_or_right0 = !flag_turn_left1_or_right0;
+          LOG_IF(INFO, flag_turn_left1_or_right0) << "Next Turn Left";
+          LOG_IF(INFO, !flag_turn_left1_or_right0) << "Next Turn Right";
         }
-        LOG_IF(INFO, 1) << "distance_changed_value : " << distance_changed_value;
+
+        //-------------------------------
+        // if (rc_ctrl_msg_ptr_->ch_x[2] > 0)
+        // {
+        //   flag_turn_left1_or_right0 = 0;
+        //   LOG(INFO) << "Next Turn Right";
+        // }
+        // if (rc_ctrl_msg_ptr_->ch_x[2] < 0)
+        // {
+        //   flag_turn_left1_or_right0 = 1;
+        //   LOG(INFO) << "Next Turn Left";
+        // }
+        //-------------------------------
+
+        LOG_IF(INFO, 0) << "distance_changed_value : " << distance_changed_value;
         if (near_obj_distacne < tolerance_nearest_dis) {
           
-          // 避开前面的障碍物
+          // avoid the front obstacle
           float target_faucet_dir;
           if (flag_turn_left1_or_right0 == true)
           {
@@ -153,10 +173,10 @@ void BikeXuanControl::tServoControl() {
             faucet_dir_output = target_faucet_dir;
           }
           faucet_dir_output = output_limit(faucet_dir_output, 1500, 1900);
-          LOG_IF(INFO, 1) << "小于指定据距离，在拐弯:" << faucet_dir_output;
+          LOG_IF(INFO, 1) << "Distance Less Sepcial Value, Turning:" << faucet_dir_output;
         } else if ( near_obj_distacne < go_stright_dis && 
                     near_obj_distacne > tolerance_nearest_dis) {
-          // 计算 x 轴的偏差，自行车向左拐加负，向右转为正数
+          // calculate x axis error, bike turn left, sould add, turn right, should desc
           float dir_error = frame_center_x - near_obj_center_x;
 
           float target_faucet_dir =
@@ -171,7 +191,7 @@ void BikeXuanControl::tServoControl() {
             faucet_dir_output = target_faucet_dir;
           }
           faucet_dir_output = output_limit(faucet_dir_output, 1500, 1900);
-          LOG_IF(INFO, 1) << "和障碍物保持同一条直线:" << faucet_dir_output;
+          LOG_IF(INFO, 1) << "Keep One Line With Obstacle:" << faucet_dir_output;
         }
         
         {
@@ -181,7 +201,7 @@ void BikeXuanControl::tServoControl() {
         }
 
       }
-      // 此时没检测到障碍物,应该缓慢的恢复到丢失障碍物的相反方向的位置
+      // now, no obstacle, turn dir to the last dir on the contrary
       else {
         float middle_angle =
             OdriveMotorConfig::getSigleInstance().servo_pwm_middle_angle_;
@@ -201,7 +221,7 @@ void BikeXuanControl::tServoControl() {
           faucet_dir_output = target_faucet_dir;
         }
         faucet_dir_output = output_limit(faucet_dir_output, 1500, 1900);
-        LOG_IF(WARNING, 1) << "没有障碍物，和上次的航向相反";
+        LOG_IF(WARNING, 1) << "No Obstacle on the contrary with last turn dir";
       }
 
       {

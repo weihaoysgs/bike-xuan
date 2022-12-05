@@ -1,6 +1,6 @@
 %YAML:1.0
 ---
-IMU.Machine.Middle.Angle: 2.851
+IMU.Machine.Middle.Angle: 2.89
 Middle.Angle.Tolerance.Change.ABSValue: 1.0
 Output.Middle.Angle: 0
 Servo.PWM.Middle.Value: 1700
@@ -25,7 +25,7 @@ Imu.Serial.Port.Name: "/dev/imu_serial" # nousing
 
 # avoid obstacle config params
 Tolerance.Nearest.Obstacle.Dis: 1.7
-Avoid.Obstacle.Drive.Speed: 2.1
+Avoid.Obstacle.Drive.Speed: 2.4
 Faucet.Dir.Control.Rate: 20
 Faucet.Dir.Error.P: 1.0
 Faucet.Dir.Output.ABS.Limit: 3
