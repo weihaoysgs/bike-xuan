@@ -68,6 +68,9 @@ int main(int argc, char** argv) {
   std::cout << "Faucet.Dir.Error.P: "
             << OdriveMotorConfig::getSigleInstance().faucet_dir_error_p_
             << std::endl;
+  std::cout << "Bike.Middle.Angle.Rectify.Limit.Abs.Angle: "
+            << OdriveMotorConfig::getSigleInstance().middle_angle_recitfy_limit_
+            << std::endl;
   std::cout << std::endl;
   ros::spin();
 }

@@ -37,6 +37,7 @@ class OdriveMotorConfig {
         tolerance_nearest_obstacle_dis_;
     odrv_config_file["Faucet.Dir.Control.Rate"] >> faucet_dir_control_rate_;
     odrv_config_file["Faucet.Dir.Error.P"] >> faucet_dir_error_p_;
+    odrv_config_file["Bike.Middle.Angle.Rectify.Limit.Abs.Angle"] >> middle_angle_recitfy_limit_;
     odrv_config_file.release();
 
     axis0_send_receive_vel_position_can_id_ = get_odrv0_can_send_id(
@@ -79,7 +80,7 @@ class OdriveMotorConfig {
   double tolerance_nearest_obstacle_dis_{0.0};
   double faucet_dir_control_rate_{0.0};
   double faucet_dir_error_p_{0.0};
-
+  double middle_angle_recitfy_limit_{0.0};
   std::string servo_port_name_{""}, dbus_serial_port_name_{""},
       sbus_serial_port_name_{""}, imu_serial_port_name_{""};
   int servo_port_baud_rate_;
