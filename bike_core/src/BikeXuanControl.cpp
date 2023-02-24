@@ -410,6 +410,15 @@ void BikeXuanControl::tBikeCoreControl() {
   while (!OdriveMotorConfig::getSigleInstance().config_init_success_)
     ;
 
+  const double init_bike_middle_angle =
+      OdriveMotorConfig::getSigleInstance().imu_machine_middle_angle_;
+  const double limit_middle_angle_change_value = 
+      OdriveMotorConfig::getSigleInstance().middle_angle_recitfy_limit_;
+  const double max_bike_xuan_balance_angle = init_bike_middle_angle + limit_middle_angle_change_value;
+  const double min_bike_xuan_balance_angle = init_bike_middle_angle - limit_middle_angle_change_value;
+  LOG(INFO) << "max_bike_xuan_balance_angle: " << max_bike_xuan_balance_angle;
+  LOG(INFO) << "min_bike_xuan_balance_angle: " << min_bike_xuan_balance_angle;
+  
   unsigned int count = 0;
   while (ros::ok()) {
     count++;
@@ -437,6 +446,15 @@ void BikeXuanControl::tBikeCoreControl() {
 
       OdriveMotorConfig::getSigleInstance().imu_machine_middle_angle_ +=
           dynamic_roll_change;
+    
+      if (OdriveMotorConfig::getSigleInstance().imu_machine_middle_angle_ > max_bike_xuan_balance_angle){
+          OdriveMotorConfig::getSigleInstance().imu_machine_middle_angle_ = max_bike_xuan_balance_angle;
+          LOG(WARNING) << "Bike Middle Angle Larger \"max_bike_xuan_balance_angle\"";
+      }
+      else if (OdriveMotorConfig::getSigleInstance().imu_machine_middle_angle_ < min_bike_xuan_balance_angle){
+          OdriveMotorConfig::getSigleInstance().imu_machine_middle_angle_ = min_bike_xuan_balance_angle;
+          LOG(WARNING) << "Bike Middle Angle Less \"min_bike_xuan_balance_angle\"";
+      }
     }
 
     if (count % bike_pid.getSpeedPid()->calculate_time_ == 0) {

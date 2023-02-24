@@ -5,9 +5,9 @@ Middle.Angle.Tolerance.Change.ABSValue: 1.0
 Output.Middle.Angle: 1
 Servo.PWM.Middle.Value: 1700
 Bike.Turn.Scale: 0.005
-Bike.Middle.Angle.Rectify.Scale: 0.00001
+Bike.Middle.Angle.Rectify.Scale: 0.0001
 Middle.Angle.Rectify.Calculate.Time: 100
-Bike.Middle.Angle.Rectify.Limit.Abs.Angle: 2.1
+Bike.Middle.Angle.Rectify.Limit.Abs.Angle: 1.5
 
 Axis0.Can.ID: 0x010
 Axis1.Can.ID: 0x020
