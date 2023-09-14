@@ -1,6 +1,10 @@
 # Bike-XUAN-HLL
-> Author: weihaoysgs@gmail.com <br>
-> Webset: www.weihaoysgs.com
+
+<div align="center">
+
+[English](README.md) | [简体中文](doc/README_CN.md)
+
+</div>
 
 <div align=center>
 <img src="./images/bike-xuan-2.jpg" width="500px">
@@ -10,8 +14,8 @@ $\quad$ The entire project mainly reproduces Zhi Huijun's `XUAN` bicycle,Unfortu
 
 <table>
     <tr>
-        <td><center><img src="./images/run1.gif" width = 78%></center></td>
-        <td><center><img src="./images/run2.gif" width = 95%></center></td>
+        <td><center><img src="./images/run2.gif" width="500"></center></td>
+        <td><center><img src="./images/run3.gif" width="500"></center></td>
     </tr>
     <tr>
         <td><center>avoid obstacle</center></td>
@@ -141,3 +145,10 @@ Use.Output.Limit: true
 - [peng-zhihui-XUAN](https://github.com/peng-zhihui/XUAN)
 - [ODrive](https://github.com/odriverobotics/ODrive)
 - [Ascend-projects](https://gitee.com/organizations/ascend/projects)
+
+## Contact me
+
+If you have any technical questions, please contact me in time.
+
+- Email: weihaoysgs@gmail.com <br>
+- Blog: www.weihaoysgs.com
