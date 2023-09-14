@@ -14,8 +14,8 @@ $\quad$ The entire project mainly reproduces Zhi Huijun's `XUAN` bicycle,Unfortu
 
 <table>
     <tr>
-        <td><center><img src="./images/run2.gif" width="250px"></center></td>
-        <td><center><img src="./images/run3.gif" width="250px"></center></td>
+        <td><center><img src="./images/run2.gif" width="200px"></center></td>
+        <td><center><img src="./images/run3.gif" width="200px"></center></td>
     </tr>
     <tr>
         <td><center>avoid obstacle</center></td>
