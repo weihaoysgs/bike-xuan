@@ -1,4 +1,9 @@
+
+<div align="center">
+
 # Bike-XUAN-HLL
+
+</div>
 
 <div align="center">
 
@@ -18,8 +23,8 @@ $\quad$ The entire project mainly reproduces Zhi Huijun's `XUAN` bicycle,Unfortu
         <td><center><img src="./images/run3.gif" width="100%"></center></td>
     </tr>
     <tr>
-        <td><center>avoid obstacle</center></td>
         <td><center>go straight</center></td>
+        <td><center>avoid obstacle</center></td>
     </tr>
 </table>
 
