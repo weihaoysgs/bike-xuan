@@ -44,7 +44,7 @@ $\quad$ At the same time, it is worth mentioning that the `AI` processing module
 |           Sensor           |          Type           |
 | :----------------------: | :---------------------: |
 |           battery           | `DJI Roomaster 6S `battery |
-|          processor unit   |       `Intel NUC`       |
+|          processor unit   |       `Intel NUC` OR `Huawei Ascend`       |
 | Momentum and rearwheel motor |      `X8018` motor       |
 |          `IMU`           |       `IMU-CH100`       |
 | Brushless motor drive |        `odrive`         |
