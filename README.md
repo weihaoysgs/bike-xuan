@@ -99,51 +99,39 @@ rosrun bike_core parser_remote_data_node
 
 ## 4. Parameter debugging quick
 
-$\quad$ The bicycle attitude control algorithm used in this project is a three-loop `PID` control algorithm. From outside to inside, there are speed loop, angle loop and angular velocity loop. The debugging sequence is based on the inside-out principle. This paper The `PID` parameters for the initial balancing in the project are as follows. By writing them in the `YAML` file, you can easily change the parameters.
+$\quad$ The bicycle attitude control algorithm used in this project is a three-loop `PID` control algorithm. From outside to inside, there are speed loop, angle loop and angular velocity loop. The debugging sequence is based on the inside-out principle. This paper The `PID` parameters for the initial balancing in the project are as follows. By writing them in the `YAML` file, you can easily change the parameters. And other system param, you can also config them by the yaml file.
 
 ```yaml
 %YAML:1.0
 ---
-Pid.Name: bike_angle_pid
-Kp: 5.213
-Ki: 0.015
-Kd: -0.15
-CalculateTime: 90
-Debug: 0
-Integal.Limit: 1.0
-Use.Integal.Limit: 1
-Output.Limit: 10.0
-Use.Output.Limit: 1
-```
+IMU.Machine.Middle.Angle: 2.89
+Middle.Angle.Tolerance.Change.ABSValue: 1.0
+Output.Middle.Angle: 1
+Servo.PWM.Middle.Value: 1700
+Bike.Turn.Scale: 0.005
+Bike.Middle.Angle.Rectify.Scale: 0.0001
+Middle.Angle.Rectify.Calculate.Time: 100
+Bike.Middle.Angle.Rectify.Limit.Abs.Angle: 1.5
 
-```yaml
-%YAML:1.0
----
-Pid.Name: bike_angle_velocity_pid
-Kp: 420.0
-Ki: 0.21
-Kd: -92.1
-CalculateTime: 30
-Debug: 0
-Integal.Limit: 200.0
-Use.Integal.Limit: 1
-Output.Limit: 2000.0
-Use.Output.Limit: 1
-```
+Axis0.Can.ID: 0x010
+Axis1.Can.ID: 0x020
 
-```yaml
-%YAML:1.0
----
-Pid.Name: bike_speed_pid
-Kp: -0.001
-Ki: 0.000
-Kd: -0.000
-CalculateTime: 480
-Debug: 0
-Integal.Limit: 2.0
-Use.Integal.Limit: true
-Output.Limit: 6.0
-Use.Output.Limit: true
+Debug.Faucte.Dir: 1
+Debug.Momentum.Wheel: 1
+Debug.Back.Drive.Wheel: 1
+
+Servo.Port.Name: "/dev/dbus_serial"
+Servo.ID: 0
+
+Dbus.Serial.Port.Name: "/dev/sbus_serial" 
+Imu.Serial.Port.Name: "/dev/imu_serial" # nousing
+
+# avoid obstacle config params
+Tolerance.Nearest.Obstacle.Dis: 1.7
+Avoid.Obstacle.Drive.Speed: 2.4
+Faucet.Dir.Control.Rate: 20
+Faucet.Dir.Error.P: 1.0
+Faucet.Dir.Output.ABS.Limit: 3
 ```
 
 ## Reference
