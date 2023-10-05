@@ -99,7 +99,7 @@ rosrun bike_core parser_remote_data_node
 
 ## 4. Parameter debugging quick
 
-$\quad$ The bicycle attitude control algorithm used in this project is a three-loop `PID` control algorithm. From outside to inside, there are speed loop, angle loop and angular velocity loop. The debugging sequence is based on the inside-out principle. This paper The `PID` parameters for the initial balancing in the project are as follows. By writing them in the `YAML` file, you can easily change the parameters. And other system param, you can also config them by the yaml file.
+$\quad$ The bicycle attitude control algorithm used in this project is a three-loop `PID` control algorithm. From outside to inside, there are speed loop, angle loop and angular velocity loop. The debugging sequence is based on the inside-out principle. Other important system parameters for the initial balancing in the project are as follows. By writing them in the `YAML` file, you can easily change the parameters. And other pid param, you can also config them by the yaml file.
 
 ```yaml
 %YAML:1.0
