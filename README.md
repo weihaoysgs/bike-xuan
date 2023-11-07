@@ -30,7 +30,7 @@ $\quad$ The entire project mainly reproduces Zhi Huijun's `XUAN` bicycle,Unfortu
 
 
 
-$\quad$ At the same time, it is worth mentioning that the `AI` processing module uses the same Huawei Ascend `Atlas 200 DK` processing chip as Zhi Huijun. Sponsored by the Third Research Institute of the Industrial Group.
+$\quad$ At the same time, it is worth mentioning that the `AI` processing module uses the same Huawei Ascend `Atlas 200 DK` processing chip as Zhi Huijun. Sponsored by the [CASC](http://www.spacechina.com/n25/index.html).
 
 <div align=center>
 <img src="./images/atlas_200_wh.jpg" width="300px">
